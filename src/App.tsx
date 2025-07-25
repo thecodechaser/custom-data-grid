@@ -8,16 +8,16 @@ import './i18n';
 import {Footer } from './components/footer';
 
 const sampleColumns: GridColumn[] = [
-  { id: '1', title: 'Name', field: 'name', type: 'text', sortable: true, filterable: true, visible: true },
-  { id: '2', title: 'Email', field: 'email', type: 'text', sortable: true, filterable: true, visible: true },
-  { id: '3', title: 'Age', field: 'age', type: 'number', sortable: true, filterable: true, visible: true },
-  { id: '4', title: 'Department', field: 'department', type: 'select', sortable: true, filterable: true, visible: true, options: ['Engineering', 'Sales', 'Marketing', 'HR', 'Finance'] },
-  { id: '5', title: 'Salary', field: 'salary', type: 'number', sortable: true, filterable: true, visible: true, format: (value) => `$${value.toLocaleString()}` },
-  { id: '6', title: 'Join Date', field: 'joinDate', type: 'date', sortable: true, filterable: true, visible: true },
-  { id: '7', title: 'Active', field: 'active', type: 'boolean', sortable: true, filterable: true, visible: true },
-  { id: '8', title: 'Phone', field: 'phone', type: 'text', sortable: true, filterable: true, visible: true },
-  { id: '9', title: 'Address', field: 'address', type: 'text', sortable: false, filterable: true, visible: true },
-  { id: '10', title: 'Performance', field: 'performance', type: 'select', sortable: true, filterable: true, visible: true, options: ['Excellent', 'Good', 'Average', 'Below Average'] },
+  { id: '1', title: 'Name', field: 'name', type: 'text', sortable: true, filterable: true, visible: true, width: 200 },
+  { id: '2', title: 'Email', field: 'email', type: 'text', sortable: true, filterable: true, visible: true, width: 240  },
+  { id: '3', title: 'Age', field: 'age', type: 'number', sortable: true, filterable: true, visible: true, width: 100  },
+  { id: '4', title: 'Department', field: 'department', type: 'select', sortable: true, filterable: true, width: 200, visible: true, options: ['Engineering', 'Sales', 'Marketing', 'HR', 'Finance'] },
+  { id: '5', title: 'Salary', field: 'salary', type: 'number', sortable: true, filterable: true, visible: true, width: 200 , format: (value) => `$${value.toLocaleString()}` },
+  { id: '6', title: 'Join Date', field: 'joinDate', type: 'date', sortable: true, filterable: true, visible: true, width: 200  },
+  { id: '7', title: 'Active', field: 'active', type: 'boolean', sortable: true, filterable: true, visible: true, width: 100  },
+  { id: '8', title: 'Phone', field: 'phone', type: 'text', sortable: true, filterable: true, visible: true, width: 200  },
+  { id: '9', title: 'Address', field: 'address', type: 'text', sortable: false, filterable: true, visible: true, width: 200  },
+  { id: '10', title: 'Performance', field: 'performance', type: 'select', sortable: true, filterable: true, width: 200, visible: true, options: ['Excellent', 'Good', 'Average', 'Below Average'] },
 ];
 
 // sample data 
