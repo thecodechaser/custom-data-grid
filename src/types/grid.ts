@@ -11,7 +11,7 @@ export interface GridColumn {
   visible?: boolean;
   pinned?: 'left' | 'right' | null;
   format?: (value: any) => string;
-  options?: string[]; // for select type
+  options?: string[];
 }
 
 export interface GridRow {
@@ -23,7 +23,7 @@ export interface FilterCondition {
   field: string;
   operator: 'equals' | 'contains' | 'startsWith' | 'endsWith' | 'gt' | 'lt' | 'gte' | 'lte' | 'in' | 'between';
   value: any;
-  values?: any[]; // for multi-select and between
+  values?: any[]; 
 }
 
 export interface SortConfig {

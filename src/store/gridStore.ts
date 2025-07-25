@@ -7,7 +7,6 @@ interface GridStore extends GridState {
   locale: string;
   wsConnected: boolean;
   
-  // Actions
   setColumns: (columns: GridColumn[]) => void;
   setRows: (rows: GridRow[]) => void;
   updateRow: (id: string | number, data: Partial<GridRow>) => void;
@@ -33,7 +32,6 @@ interface GridStore extends GridState {
   applyFiltersAndSort: () => void;
 }
 
-// Default themes
 const themes: Theme[] = [
   {
     id: 'modern-blue',
@@ -91,7 +89,6 @@ const themes: Theme[] = [
 export const useGridStore = create<GridStore>()(
   persist(
     (set, get) => ({
-      // Initial state
       columns: [],
       rows: [],
       filteredRows: [],
@@ -106,10 +103,7 @@ export const useGridStore = create<GridStore>()(
       theme: themes[0],
       locale: 'en',
       wsConnected: false,
-
-      // Actions
       setColumns: (columns) => set({ columns }),
-      
       setRows: (rows) => {
         set({ rows });
         get().applyFiltersAndSort();
@@ -213,9 +207,15 @@ export const useGridStore = create<GridStore>()(
         let filteredRows = [...get().rows];
         const { filters, sortConfig } = get();
 
-        // Apply filters
         filters.forEach(filter => {
           filteredRows = filteredRows.filter(row => {
+            if (filter.field === '_search') {
+              const searchValue = String(filter.value).toLowerCase();
+              return Object.values(row).some(val => 
+                String(val).toLowerCase().includes(searchValue)
+              );
+            }
+            
             const value = row[filter.field];
             
             switch (filter.operator) {
@@ -245,7 +245,6 @@ export const useGridStore = create<GridStore>()(
           });
         });
 
-        // Apply sorting
         if (sortConfig) {
           filteredRows.sort((a, b) => {
             const aValue = a[sortConfig.field];

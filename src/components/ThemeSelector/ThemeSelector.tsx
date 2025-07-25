@@ -30,7 +30,7 @@ export const ThemeSelector: React.FC = () => {
     <div className="relative">
       <motion.button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 p-2 rounded-lg bg-surface shadow-lg border"
+        className="flex items-center gap-2 p-2 border rounded-lg shadow-lg bg-surface"
         style={{ borderColor: 'var(--color-border)' }}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
@@ -41,7 +41,7 @@ export const ThemeSelector: React.FC = () => {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            className="absolute top-full right-0 mt-2 w-64 bg-surface border shadow-xl rounded-lg p-4 z-50"
+            className="absolute right-0 z-50 w-64 p-4 mt-2 border rounded-lg shadow-xl top-full bg-surface"
             style={{ 
               backgroundColor: 'var(--color-surface)',
               borderColor: 'var(--color-border)',
@@ -52,10 +52,9 @@ export const ThemeSelector: React.FC = () => {
             exit={{ opacity: 0, y: -10, scale: 0.95 }}
             transition={{ duration: 0.2 }}
           >
-            {/* Themes */}
             <div className="mb-4">
               <h3 
-                className="text-sm font-semibold mb-3"
+                className="mb-3 text-sm font-semibold"
                 style={{ color: 'var(--color-text)' }}
               >
                 Themes
@@ -100,10 +99,9 @@ export const ThemeSelector: React.FC = () => {
               </div>
             </div>
 
-            {/* Languages */}
-            <div className="border-t pt-4" style={{ borderColor: 'var(--color-border)' }}>
+            <div className="pt-4 border-t" style={{ borderColor: 'var(--color-border)' }}>
               <h3 
-                className="text-sm font-semibold mb-3 flex items-center gap-2"
+                className="flex items-center gap-2 mb-3 text-sm font-semibold"
                 style={{ color: 'var(--color-text)' }}
               >
                 <Globe className="w-4 h-4" />
@@ -133,7 +131,6 @@ export const ThemeSelector: React.FC = () => {
         )}
       </AnimatePresence>
 
-      {/* Backdrop */}
       {isOpen && (
         <div
           className="fixed inset-0 z-40"

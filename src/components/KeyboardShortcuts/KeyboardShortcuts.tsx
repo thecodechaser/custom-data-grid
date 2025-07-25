@@ -19,10 +19,9 @@ export const KeyboardShortcuts: React.FC = () => {
 
   return (
     <>
-      {/* Help Button */}
       <motion.button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-4 left-4 p-3 rounded-full bg-surface shadow-lg border z-40"
+        className="fixed z-40 p-3 border rounded-full shadow-lg bottom-4 left-4 bg-surface"
         style={{ borderColor: 'var(--color-border)' }}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
@@ -31,22 +30,19 @@ export const KeyboardShortcuts: React.FC = () => {
         <HelpCircle className="w-5 h-5" style={{ color: 'var(--color-text)' }} />
       </motion.button>
 
-      {/* Shortcuts Modal */}
       <AnimatePresence>
         {isOpen && (
           <>
-            {/* Backdrop */}
             <motion.div
-              className="fixed inset-0 bg-black/50 z-50"
+              className="fixed inset-0 z-50 bg-black/50"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsOpen(false)}
             />
-
-            {/* Modal */}
+            
             <motion.div
-              className="fixed inset-0 flex items-center justify-center z-50 p-4"
+              className="fixed inset-0 z-50 flex items-center justify-center p-4"
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
@@ -80,7 +76,7 @@ export const KeyboardShortcuts: React.FC = () => {
                     {shortcuts.map((shortcut, index) => (
                       <motion.div
                         key={shortcut.key}
-                        className="flex items-center justify-between p-3 rounded-lg border"
+                        className="flex items-center justify-between p-3 border rounded-lg"
                         style={{ borderColor: 'var(--color-border)' }}
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
@@ -93,7 +89,7 @@ export const KeyboardShortcuts: React.FC = () => {
                           {shortcut.description}
                         </span>
                         <div 
-                          className="px-2 py-1 rounded text-xs font-mono bg-background"
+                          className="px-2 py-1 font-mono text-xs rounded bg-background"
                           style={{ 
                             color: 'var(--color-text)',
                             backgroundColor: 'var(--color-background)',
@@ -107,7 +103,7 @@ export const KeyboardShortcuts: React.FC = () => {
                   </div>
 
                   <div 
-                    className="mt-6 pt-4 border-t text-xs text-center opacity-70"
+                    className="pt-4 mt-6 text-xs text-center border-t opacity-70"
                     style={{ 
                       borderColor: 'var(--color-border)',
                       color: 'var(--color-text-secondary)'

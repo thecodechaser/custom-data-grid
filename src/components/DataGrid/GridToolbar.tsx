@@ -33,10 +33,7 @@ export const GridToolbar: React.FC = () => {
     setSearchTerm(value);
     
     if (value.trim()) {
-      // Remove existing search filter
       removeFilter('_search');
-      
-      // Add new search filter
       addFilter({
         field: '_search',
         operator: 'contains',
@@ -75,18 +72,16 @@ export const GridToolbar: React.FC = () => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
-      {/* Left side - Search and Filters */}
       <div className="flex items-center gap-4">
-        {/* Search */}
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 opacity-50" />
+          <Search className="absolute w-4 h-4 transform -translate-y-1/2 opacity-50 left-3 top-1/2" />
           <input
             type="text"
             placeholder="Search..."
             value={searchTerm}
             onChange={(e) => handleSearch(e.target.value)}
             data-search-input
-            className="pl-10 pr-4 py-2 rounded-lg border bg-background focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+            className="py-2 pl-10 pr-4 transition-all border rounded-lg bg-background focus:ring-2 focus:ring-primary/20 focus:border-primary"
             style={{
               color: 'var(--color-text)',
               borderColor: 'var(--color-border)',
@@ -94,8 +89,6 @@ export const GridToolbar: React.FC = () => {
             }}
           />
         </div>
-
-        {/* Filter indicator */}
         {filters.length > 0 && (
           <motion.div
             className="flex items-center gap-2"
@@ -104,7 +97,7 @@ export const GridToolbar: React.FC = () => {
             transition={{ duration: 0.2 }}
           >
             <div 
-              className="flex items-center gap-1 px-3 py-1 rounded-full text-sm"
+              className="flex items-center gap-1 px-3 py-1 text-sm rounded-full"
               style={{ 
                 backgroundColor: 'var(--color-primary)', 
                 color: 'white' 
@@ -125,14 +118,11 @@ export const GridToolbar: React.FC = () => {
           </motion.div>
         )}
       </div>
-
-      {/* Right side - Actions */}
       <div className="flex items-center gap-2">
-        {/* Delete selected */}
         {selectedRows.size > 0 && (
           <motion.button
             onClick={handleDeleteSelected}
-            className="flex items-center gap-2 px-3 py-2 rounded-lg text-white hover:opacity-90 transition-opacity"
+            className="flex items-center gap-2 px-3 py-2 text-white transition-opacity rounded-lg hover:opacity-90"
             style={{ backgroundColor: 'var(--color-error)' }}
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -143,12 +133,10 @@ export const GridToolbar: React.FC = () => {
             {t('actions.delete')} ({selectedRows.size})
           </motion.button>
         )}
-
-        {/* Export dropdown */}
         <div className="relative">
           <motion.button
             onClick={() => setShowExportMenu(!showExportMenu)}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg border hover:bg-border/10 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 transition-colors border rounded-lg hover:bg-border/10"
             style={{
               color: 'var(--color-text)',
               borderColor: 'var(--color-border)'
@@ -162,15 +150,19 @@ export const GridToolbar: React.FC = () => {
 
           {showExportMenu && (
             <motion.div
-              className="absolute top-full right-0 mt-2 bg-surface border shadow-lg rounded-lg p-2 z-20 min-w-48"
-              style={{ borderColor: 'var(--color-border)' }}
+              className="absolute right-0 z-20 p-2 mt-2 border rounded-lg shadow-lg top-full bg-surface min-w-48"
+              style={{ 
+                backgroundColor: 'var(--color-surface)',
+                borderColor: 'var(--color-border)',
+                boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
+              }}
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.2 }}
             >
               <button
                 onClick={handleExportCSV}
-                className="flex items-center gap-2 w-full px-3 py-2 text-sm rounded hover:bg-border/10 transition-colors"
+                className="flex items-center w-full gap-2 px-3 py-2 text-sm transition-colors rounded hover:bg-border/10"
                 style={{ color: 'var(--color-text)' }}
               >
                 <Download className="w-4 h-4" />
@@ -178,7 +170,7 @@ export const GridToolbar: React.FC = () => {
               </button>
               <button
                 onClick={handleExportPDF}
-                className="flex items-center gap-2 w-full px-3 py-2 text-sm rounded hover:bg-border/10 transition-colors"
+                className="flex items-center w-full gap-2 px-3 py-2 text-sm transition-colors rounded hover:bg-border/10"
                 style={{ color: 'var(--color-text)' }}
               >
                 <Download className="w-4 h-4" />
@@ -187,11 +179,9 @@ export const GridToolbar: React.FC = () => {
             </motion.div>
           )}
         </div>
-
-        {/* Print */}
         <motion.button
           onClick={handlePrint}
-          className="flex items-center gap-2 px-4 py-2 rounded-lg border hover:bg-border/10 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 transition-colors border rounded-lg hover:bg-border/10"
           style={{
             color: 'var(--color-text)',
             borderColor: 'var(--color-border)'
@@ -202,10 +192,8 @@ export const GridToolbar: React.FC = () => {
           <Printer className="w-4 h-4" />
           {t('actions.print')}
         </motion.button>
-
-        {/* Settings */}
         <motion.button
-          className="p-2 rounded-lg border hover:bg-border/10 transition-colors"
+          className="p-2 transition-colors border rounded-lg hover:bg-border/10"
           style={{
             color: 'var(--color-text)',
             borderColor: 'var(--color-border)'
@@ -216,8 +204,6 @@ export const GridToolbar: React.FC = () => {
           <Settings className="w-5 h-5" />
         </motion.button>
       </div>
-
-      {/* Export menu backdrop */}
       {showExportMenu && (
         <div
           className="fixed inset-0 z-10"

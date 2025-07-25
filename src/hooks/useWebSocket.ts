@@ -1,6 +1,5 @@
 import { useEffect, useRef } from 'react';
 import { useGridStore } from '../store/gridStore';
-import { GridRow } from '../types/grid';
 
 export const useWebSocket = (url?: string) => {
   const wsRef = useRef<WebSocket | null>(null);
@@ -47,7 +46,6 @@ export const useWebSocket = (url?: string) => {
         wsRef.current.onclose = () => {
           console.log('WebSocket disconnected');
           setWSConnected(false);
-          // Attempt to reconnect after 3 seconds
           setTimeout(connectWebSocket, 3000);
         };
 

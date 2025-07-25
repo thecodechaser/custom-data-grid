@@ -99,7 +99,6 @@ export const DataGrid: React.FC<DataGridProps> = ({ className = '' }) => {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
-      {/* Theme and Language Selector */}
       <div className="fixed z-50 flex gap-2 top-4 right-4">
         <ThemeSelector />
         <div className="flex items-center gap-2 px-3 py-2 rounded-lg shadow-lg bg-surface">
@@ -121,16 +120,9 @@ export const DataGrid: React.FC<DataGridProps> = ({ className = '' }) => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.1 }}
         >
-          {/* Toolbar */}
           <GridToolbar />
-
-          {/* Column Manager */}
           <ColumnManager />
-
-          {/* Filter Panel */}
           <FilterManager />
-
-          {/* Grid Container */}
           <div data-grid-container className="relative overflow-auto">
             <motion.table 
               className="w-full border-collapse"
@@ -145,11 +137,7 @@ export const DataGrid: React.FC<DataGridProps> = ({ className = '' }) => {
               />
             </motion.table>
           </div>
-
-          {/* Footer */}
           <GridFooter />
-
-          {/* Selection Info */}
           <AnimatePresence>
             {selectedRows.size > 0 && (
               <motion.div
@@ -167,8 +155,6 @@ export const DataGrid: React.FC<DataGridProps> = ({ className = '' }) => {
           </AnimatePresence>
         </motion.div>
       </div>
-
-      {/* Keyboard Shortcuts Helper */}
       <KeyboardShortcuts />
     </motion.div>
   );

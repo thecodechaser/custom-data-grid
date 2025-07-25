@@ -6,7 +6,6 @@ import { useWebSocket } from './hooks/useWebSocket';
 import { GridColumn, GridRow } from './types/grid';
 import './i18n';
 
-// Sample data
 const sampleColumns: GridColumn[] = [
   { id: '1', title: 'Name', field: 'name', type: 'text', sortable: true, filterable: true, visible: true },
   { id: '2', title: 'Email', field: 'email', type: 'text', sortable: true, filterable: true, visible: true },
@@ -20,7 +19,8 @@ const sampleColumns: GridColumn[] = [
   { id: '10', title: 'Performance', field: 'performance', type: 'select', sortable: true, filterable: true, visible: true, options: ['Excellent', 'Good', 'Average', 'Below Average'] },
 ];
 
-const sampleRows: GridRow[] = Array.from({ length: 100 }, (_, i) => ({
+// sample data 
+const sampleRows: GridRow[] = Array.from({ length: 1000 }, (_, i) => ({
   id: i + 1,
   name: `Employee ${i + 1}`,
   email: `employee${i + 1}@company.com`,
@@ -37,7 +37,7 @@ const sampleRows: GridRow[] = Array.from({ length: 100 }, (_, i) => ({
 function App() {
   const { setColumns, setRows, theme } = useGridStore();
   
-  // WebSocket connection (optional - for real-time updates)
+  // WebSocket connection (for real-time updates)
   // useWebSocket('ws://localhost:8080/ws');
 
   useEffect(() => {

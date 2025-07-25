@@ -34,7 +34,6 @@ export const GridFooter: React.FC = () => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, delay: 0.2 }}
     >
-      {/* Rows per page */}
       <div className="flex items-center gap-3">
         <label 
           className="text-sm font-medium"
@@ -45,7 +44,7 @@ export const GridFooter: React.FC = () => {
         <select
           value={pageSize}
           onChange={(e) => setPageSize(Number(e.target.value))}
-          className="px-3 py-1 rounded border bg-surface cursor-pointer"
+          className="px-3 py-1 border rounded cursor-pointer bg-surface"
           style={{ 
             color: 'var(--color-text)',
             borderColor: 'var(--color-border)',
@@ -59,8 +58,6 @@ export const GridFooter: React.FC = () => {
           ))}
         </select>
       </div>
-
-      {/* Pagination info */}
       <div className="flex items-center gap-4">
         <span 
           className="text-sm"
@@ -70,7 +67,6 @@ export const GridFooter: React.FC = () => {
         </span>
 
         <div className="flex items-center gap-1">
-          {/* First page */}
           <motion.button
             onClick={() => goToPage(1)}
             disabled={currentPage === 1}
@@ -80,8 +76,6 @@ export const GridFooter: React.FC = () => {
           >
             <ChevronsLeft className="w-5 h-5" style={{ color: 'var(--color-text)' }} />
           </motion.button>
-
-          {/* Previous page */}
           <motion.button
             onClick={() => goToPage(currentPage - 1)}
             disabled={currentPage === 1}
@@ -91,8 +85,6 @@ export const GridFooter: React.FC = () => {
           >
             <ChevronLeft className="w-5 h-5" style={{ color: 'var(--color-text)' }} />
           </motion.button>
-
-          {/* Page numbers */}
           <div className="flex items-center gap-1 mx-2">
             {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
               let pageNum;
@@ -127,8 +119,6 @@ export const GridFooter: React.FC = () => {
               );
             })}
           </div>
-
-          {/* Next page */}
           <motion.button
             onClick={() => goToPage(currentPage + 1)}
             disabled={currentPage === totalPages}
@@ -138,8 +128,6 @@ export const GridFooter: React.FC = () => {
           >
             <ChevronRight className="w-5 h-5" style={{ color: 'var(--color-text)' }} />
           </motion.button>
-
-          {/* Last page */}
           <motion.button
             onClick={() => goToPage(totalPages)}
             disabled={currentPage === totalPages}

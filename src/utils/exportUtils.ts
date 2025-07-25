@@ -1,21 +1,17 @@
 import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
 import { GridRow } from '../types/grid';
 
 export const exportToPDF = async (data: GridRow[]) => {
   const pdf = new jsPDF();
-  
-  // Add title
+
   pdf.setFontSize(16);
   pdf.text('Data Grid Export', 14, 22);
   
-  // Add timestamp
   pdf.setFontSize(10);
   pdf.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, 30);
   
   let yPosition = 45;
   
-  // Add data
   data.forEach((row, index) => {
     if (yPosition > 280) {
       pdf.addPage();

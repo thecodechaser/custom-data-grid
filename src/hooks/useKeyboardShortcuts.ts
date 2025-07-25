@@ -85,8 +85,6 @@ export const useKeyboardShortcuts = () => {
       action: () => setCurrentPage(totalPages)
     }
   ];
-
-  // Register all shortcuts
   shortcuts.forEach(shortcut => {
     useHotkeys(
       shortcut.key,

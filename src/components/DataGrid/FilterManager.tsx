@@ -1,339 +1,300 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
-import { X, Plus, Calendar } from 'lucide-react';
-import DatePicker from 'react-datepicker';
-import Select from 'react-select';
+import { X, Calendar, Filter, ChevronDown } from 'lucide-react';
 import { useGridStore } from '../../store/gridStore';
 import { FilterCondition } from '../../types/grid';
-import "react-datepicker/dist/react-datepicker.css";
 
-export const FilterManager: React.FC = () => {
-  const { t } = useTranslation();
-  const { columns, filters, addFilter, removeFilter } = useGridStore();
-  const [showAddFilter, setShowAddFilter] = useState(false);
-  const [newFilter, setNewFilter] = useState<Partial<FilterCondition>>({
-    field: '',
-    operator: 'contains',
-    value: ''
-  });
+interface FilterManagerProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
 
-  const filterableColumns = columns.filter(col => col.filterable !== false);
-
-  const operatorOptions = [
-    { value: 'equals', label: t('filter.equals') },
-    { value: 'contains', label: t('filter.contains') },
-    { value: 'startsWith', label: t('filter.startsWith') },
-    { value: 'endsWith', label: t('filter.endsWith') },
-    { value: 'gt', label: t('filter.greaterThan') },
-    { value: 'lt', label: t('filter.lessThan') },
-    { value: 'between', label: t('filter.between') },
-  ];
+export const FilterManager: React.FC<FilterManagerProps> = ({ isOpen, onClose }) => {
+  const { filters, addFilter, removeFilter, updateFilter, columns, theme } = useGridStore();
 
   const handleAddFilter = () => {
-    if (newFilter.field && newFilter.operator && newFilter.value !== undefined) {
-      addFilter(newFilter as FilterCondition);
-      setNewFilter({ field: '', operator: 'contains', value: '' });
-      setShowAddFilter(false);
+    const newFilter: FilterCondition = {
+      id: Date.now().toString(),
+      column: columns[0]?.key || '',
+      operator: 'contains',
+      value: '',
+      type: 'text'
+    };
+    addFilter(newFilter);
+  };
+
+  const handleUpdateFilter = (filterId: string, updates: Partial<FilterCondition>) => {
+    updateFilter(filterId, updates);
+  };
+
+  const getOperatorOptions = (type: string) => {
+    switch (type) {
+      case 'number':
+        return [
+          { value: 'equals', label: 'Equals' },
+          { value: 'not_equals', label: 'Not Equals' },
+          { value: 'greater_than', label: 'Greater Than' },
+          { value: 'less_than', label: 'Less Than' },
+          { value: 'greater_equal', label: 'Greater or Equal' },
+          { value: 'less_equal', label: 'Less or Equal' }
+        ];
+      case 'date':
+        return [
+          { value: 'equals', label: 'On Date' },
+          { value: 'not_equals', label: 'Not On Date' },
+          { value: 'greater_than', label: 'After' },
+          { value: 'less_than', label: 'Before' },
+          { value: 'greater_equal', label: 'On or After' },
+          { value: 'less_equal', label: 'On or Before' }
+        ];
+      default:
+        return [
+          { value: 'contains', label: 'Contains' },
+          { value: 'not_contains', label: 'Does Not Contain' },
+          { value: 'equals', label: 'Equals' },
+          { value: 'not_equals', label: 'Not Equals' },
+          { value: 'starts_with', label: 'Starts With' },
+          { value: 'ends_with', label: 'Ends With' }
+        ];
     }
   };
 
-  const renderFilterValue = (filter: FilterCondition, column: any) => {
-    const baseStyle = {
-      color: 'var(--color-text)',
-      backgroundColor: 'var(--color-surface)',
-      borderColor: 'var(--color-border)'
-    };
+  const renderFilterValue = (filter: FilterCondition) => {
+    const baseClasses = `w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 transition-colors ${
+      theme === 'dark' 
+        ? 'bg-gray-700 border-gray-600 text-white focus:ring-blue-500' 
+        : 'bg-white border-gray-300 text-gray-900 focus:ring-blue-500'
+    }`;
 
-    switch (column?.type) {
+    switch (filter.type) {
       case 'date':
         return (
-          <DatePicker
-            selected={filter.value instanceof Date ? filter.value : new Date(filter.value)}
-            onChange={(date) => {
-              addFilter({ ...filter, value: date });
-            }}
-            className="px-3 py-1 text-sm border rounded"
-            style={baseStyle}
-          />
-        );
-
-      case 'select':
-        if (filter.operator === 'in') {
-          return (
-            <Select
-              isMulti
-              options={column.options?.map((opt: string) => ({ value: opt, label: opt }))}
-              value={filter.values?.map(val => ({ value: val, label: val }))}
-              onChange={(selected) => {
-                addFilter({ 
-                  ...filter, 
-                  values: selected?.map(s => s.value) || [] 
-                });
-              }}
-              className="min-w-48"
-              styles={{
-                control: (base) => ({ ...base, ...baseStyle }),
-                menu: (base) => ({ ...base, backgroundColor: 'var(--color-surface)' }),
-                option: (base) => ({ ...base, color: 'var(--color-text)' })
-              }}
+          <div className="relative">
+            <input
+              type="date"
+              value={filter.value}
+              onChange={(e) => handleUpdateFilter(filter.id, { value: e.target.value })}
+              className={baseClasses}
             />
-          );
-        }
-        return (
-          <select
-            value={filter.value}
-            onChange={(e) => addFilter({ ...filter, value: e.target.value })}
-            className="px-3 py-1 text-sm border rounded"
-            style={baseStyle}
-          >
-            <option value="">All</option>
-            {column.options?.map((option: string) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
+            <Calendar className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 pointer-events-none right-3 top-1/2" />
+          </div>
         );
-
       case 'number':
-        if (filter.operator === 'between') {
-          return (
-            <div className="flex items-center gap-2">
-              <input
-                type="number"
-                value={filter.values?.[0] || ''}
-                onChange={(e) => {
-                  const values = filter.values || [0, 0];
-                  values[0] = Number(e.target.value);
-                  addFilter({ ...filter, values });
-                }}
-                className="w-20 px-3 py-1 text-sm border rounded"
-                style={baseStyle}
-              />
-              <span style={{ color: 'var(--color-text-secondary)' }}>to</span>
-              <input
-                type="number"
-                value={filter.values?.[1] || ''}
-                onChange={(e) => {
-                  const values = filter.values || [0, 0];
-                  values[1] = Number(e.target.value);
-                  addFilter({ ...filter, values });
-                }}
-                className="w-20 px-3 py-1 text-sm border rounded"
-                style={baseStyle}
-              />
-            </div>
-          );
-        }
         return (
           <input
             type="number"
             value={filter.value}
-            onChange={(e) => addFilter({ ...filter, value: Number(e.target.value) })}
-            className="px-3 py-1 text-sm border rounded"
-            style={baseStyle}
+            onChange={(e) => handleUpdateFilter(filter.id, { value: e.target.value })}
+            className={baseClasses}
+            placeholder="Enter number..."
           />
         );
-
+      case 'select':
+        return (
+          <div className="relative">
+            <select
+              value={filter.value}
+              onChange={(e) => handleUpdateFilter(filter.id, { value: e.target.value })}
+              className={`${baseClasses} appearance-none pr-10`}
+            >
+              <option value="">Select option...</option>
+              {filter.options?.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+            <ChevronDown className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 pointer-events-none right-3 top-1/2" />
+          </div>
+        );
       default:
         return (
           <input
             type="text"
             value={filter.value}
-            onChange={(e) => addFilter({ ...filter, value: e.target.value })}
-            className="px-3 py-1 text-sm border rounded"
-            style={baseStyle}
+            onChange={(e) => handleUpdateFilter(filter.id, { value: e.target.value })}
+            className={baseClasses}
+            placeholder="Enter value..."
           />
         );
     }
   };
 
-  if (filters.length === 0 && !showAddFilter) {
-    return null;
-  }
-
   return (
-    <motion.div
-      className="p-4 border-b bg-surface"
-      style={{ borderColor: 'var(--color-border)' }}
-      initial={{ opacity: 0, height: 0 }}
-      animate={{ opacity: 1, height: 'auto' }}
-      exit={{ opacity: 0, height: 0 }}
-      transition={{ duration: 0.3 }}
-    >
-      <div className="flex items-center justify-between mb-3">
-        <h3 
-          className="font-semibold"
-          style={{ color: 'var(--color-text)' }}
-        >
-          Filters
-        </h3>
-        
-        <motion.button
-          onClick={() => setShowAddFilter(true)}
-          className="flex items-center gap-2 px-3 py-1 text-sm border rounded hover:bg-border/10"
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          className={`absolute top-full left-0 right-0 mt-2 p-6 rounded-lg shadow-xl border z-50 ${
+            theme === 'dark'
+              ? 'bg-gray-800 border-gray-700'
+              : 'bg-white border-gray-200'
+          }`}
           style={{
-            color: 'var(--color-text)',
-            borderColor: 'var(--color-border)'
+            backgroundColor: theme === 'dark' ? '#1f2937' : '#ffffff',
+            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
           }}
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
         >
-          <Plus className="w-4 h-4" />
-          Add Filter
-        </motion.button>
-      </div>
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <Filter className="w-5 h-5 text-blue-500" />
+              <h3 className={`text-lg font-semibold ${
+                theme === 'dark' ? 'text-white' : 'text-gray-900'
+              }`}>
+                Advanced Filters
+              </h3>
+            </div>
+            <button
+              onClick={onClose}
+              className={`p-2 rounded-lg transition-colors ${
+                theme === 'dark'
+                  ? 'hover:bg-gray-700 text-gray-400 hover:text-white'
+                  : 'hover:bg-gray-100 text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
 
-      <div className="space-y-2">
-        <AnimatePresence>
-          {filters.filter(f => f.field !== '_search').map((filter, index) => {
-            const column = columns.find(col => col.field === filter.field);
-            
-            return (
+          <div className="space-y-4">
+            {filters.map((filter, index) => (
               <motion.div
-                key={`${filter.field}-${index}`}
-                className="flex items-center gap-3 p-3 border rounded-lg bg-background"
-                style={{ borderColor: 'var(--color-border)' }}
+                key={filter.id}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 20 }}
-                transition={{ duration: 0.2 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ delay: index * 0.1 }}
+                className={`p-4 rounded-lg border ${
+                  theme === 'dark'
+                    ? 'bg-gray-700 border-gray-600'
+                    : 'bg-gray-50 border-gray-200'
+                }`}
               >
-                <span 
-                  className="font-medium min-w-24"
-                  style={{ color: 'var(--color-text)' }}
-                >
-                  {column?.title}
-                </span>
-                
-                <select
-                  value={filter.operator}
-                  onChange={(e) => {
-                    const updatedFilter = { ...filter, operator: e.target.value as any };
-                    if (e.target.value === 'in') {
-                      updatedFilter.values = [];
-                    } else if (e.target.value === 'between') {
-                      updatedFilter.values = [0, 0];
-                    }
-                    addFilter(updatedFilter);
-                  }}
-                  className="px-3 py-1 text-sm border rounded"
-                  style={{
-                    color: 'var(--color-text)',
-                    backgroundColor: 'var(--color-surface)',
-                    borderColor: 'var(--color-border)'
-                  }}
-                >
-                  {operatorOptions.map(option => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
+                  <div>
+                    <label className={`block text-sm font-medium mb-2 ${
+                      theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                    }`}>
+                      Column
+                    </label>
+                    <div className="relative">
+                      <select
+                        value={filter.column}
+                        onChange={(e) => {
+                          const column = columns.find(col => col.key === e.target.value);
+                          handleUpdateFilter(filter.id, {
+                            column: e.target.value,
+                            type: column?.type || 'text'
+                          });
+                        }}
+                        className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 appearance-none pr-10 transition-colors ${
+                          theme === 'dark'
+                            ? 'bg-gray-600 border-gray-500 text-white focus:ring-blue-500'
+                            : 'bg-white border-gray-300 text-gray-900 focus:ring-blue-500'
+                        }`}
+                      >
+                        {columns.map((column) => (
+                          <option key={column.key} value={column.key}>
+                            {column.title}
+                          </option>
+                        ))}
+                      </select>
+                      <ChevronDown className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 pointer-events-none right-3 top-1/2" />
+                    </div>
+                  </div>
 
-                {renderFilterValue(filter, column)}
+                  <div>
+                    <label className={`block text-sm font-medium mb-2 ${
+                      theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                    }`}>
+                      Operator
+                    </label>
+                    <div className="relative">
+                      <select
+                        value={filter.operator}
+                        onChange={(e) => handleUpdateFilter(filter.id, { operator: e.target.value as any })}
+                        className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 appearance-none pr-10 transition-colors ${
+                          theme === 'dark'
+                            ? 'bg-gray-600 border-gray-500 text-white focus:ring-blue-500'
+                            : 'bg-white border-gray-300 text-gray-900 focus:ring-blue-500'
+                        }`}
+                      >
+                        {getOperatorOptions(filter.type).map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
+                      </select>
+                      <ChevronDown className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 pointer-events-none right-3 top-1/2" />
+                    </div>
+                  </div>
 
-                <motion.button
-                  onClick={() => removeFilter(filter.field)}
-                  className="p-1 rounded hover:bg-error/20 text-error"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <X className="w-4 h-4" />
-                </motion.button>
+                  <div>
+                    <label className={`block text-sm font-medium mb-2 ${
+                      theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                    }`}>
+                      Value
+                    </label>
+                    {renderFilterValue(filter)}
+                  </div>
+
+                  <div className="flex items-end">
+                    <button
+                      onClick={() => removeFilter(filter.id)}
+                      className="flex items-center justify-center w-full gap-2 px-4 py-2 text-white transition-colors bg-red-500 rounded-lg hover:bg-red-600"
+                    >
+                      <X className="w-4 h-4" />
+                      Remove
+                    </button>
+                  </div>
+                </div>
               </motion.div>
-            );
-          })}
-        </AnimatePresence>
+            ))}
 
-        {/* Add Filter Form */}
-        <AnimatePresence>
-          {showAddFilter && (
-            <motion.div
-              className="flex items-center gap-3 p-3 border rounded-lg bg-background"
-              style={{ borderColor: 'var(--color-primary)' }}
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ duration: 0.2 }}
-            >
-              <select
-                value={newFilter.field}
-                onChange={(e) => setNewFilter({ ...newFilter, field: e.target.value })}
-                className="px-3 py-1 text-sm border rounded min-w-32"
-                style={{
-                  color: 'var(--color-text)',
-                  backgroundColor: 'var(--color-surface)',
-                  borderColor: 'var(--color-border)'
-                }}
-              >
-                <option value="">Select field</option>
-                {filterableColumns.map(column => (
-                  <option key={column.id} value={column.field}>
-                    {column.title}
-                  </option>
-                ))}
-              </select>
-
-              <select
-                value={newFilter.operator}
-                onChange={(e) => setNewFilter({ ...newFilter, operator: e.target.value as any })}
-                className="px-3 py-1 text-sm border rounded"
-                style={{
-                  color: 'var(--color-text)',
-                  backgroundColor: 'var(--color-surface)',
-                  borderColor: 'var(--color-border)'
-                }}
-              >
-                {operatorOptions.map(option => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-
-              <input
-                type="text"
-                value={newFilter.value}
-                onChange={(e) => setNewFilter({ ...newFilter, value: e.target.value })}
-                placeholder="Value"
-                className="px-3 py-1 text-sm border rounded"
-                style={{
-                  color: 'var(--color-text)',
-                  backgroundColor: 'var(--color-surface)',
-                  borderColor: 'var(--color-border)'
-                }}
-              />
-
-              <div className="flex gap-2">
-                <motion.button
-                  onClick={handleAddFilter}
-                  className="px-3 py-1 text-sm text-white rounded"
-                  style={{ backgroundColor: 'var(--color-success)' }}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  {t('filter.apply')}
-                </motion.button>
-                
-                <motion.button
-                  onClick={() => setShowAddFilter(false)}
-                  className="px-3 py-1 text-sm border rounded"
-                  style={{
-                    color: 'var(--color-text)',
-                    borderColor: 'var(--color-border)'
-                  }}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  {t('actions.cancel')}
-                </motion.button>
+            {filters.length === 0 && (
+              <div className={`text-center py-8 ${
+                theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+              }`}>
+                <Filter className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                <p>No filters applied. Click "Add Filter" to get started.</p>
               </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-    </motion.div>
+            )}
+          </div>
+
+          <div className="flex justify-between mt-6">
+            <button
+              onClick={handleAddFilter}
+              className="flex items-center gap-2 px-4 py-2 text-white transition-colors bg-blue-500 rounded-lg hover:bg-blue-600"
+            >
+              <Filter className="w-4 h-4" />
+              Add Filter
+            </button>
+
+            <div className="flex gap-2">
+              <button
+                onClick={() => {
+                  filters.forEach(filter => removeFilter(filter.id));
+                }}
+                className={`px-4 py-2 rounded-lg transition-colors ${
+                  theme === 'dark'
+                    ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                }`}
+              >
+                Clear All
+              </button>
+              <button
+                onClick={onClose}
+                className="px-4 py-2 text-white transition-colors bg-green-500 rounded-lg hover:bg-green-600"
+              >
+                Apply Filters
+              </button>
+            </div>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 };

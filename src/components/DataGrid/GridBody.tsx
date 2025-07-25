@@ -74,7 +74,6 @@ export const GridBody: React.FC<GridBodyProps> = ({ columns, rows }) => {
               transition: { duration: 0.1 } 
             }}
           >
-            {/* Selection Cell */}
             <td className="w-12 p-3">
               <motion.div
                 className="flex items-center justify-center"
@@ -90,8 +89,6 @@ export const GridBody: React.FC<GridBodyProps> = ({ columns, rows }) => {
                 />
               </motion.div>
             </td>
-
-            {/* Data Cells */}
             {columns.map((column) => (
               <motion.td
                 key={`${row.id}-${column.id}`}

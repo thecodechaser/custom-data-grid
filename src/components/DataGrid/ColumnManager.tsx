@@ -11,14 +11,15 @@ export const ColumnManager: React.FC = () => {
     columns, 
     toggleColumnVisibility, 
     pinColumn, 
-    reorderColumns 
+    reorderColumns,
+    resizeColumn
   } = useGridStore();
 
   return (
     <>
       <motion.button
         onClick={() => setIsOpen(true)}
-        className="fixed top-20 right-4 z-40 p-3 rounded-full shadow-lg bg-surface border"
+        className="fixed z-40 p-3 border rounded-full shadow-lg top-20 right-4 bg-surface"
         style={{ borderColor: 'var(--color-border)' }}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
@@ -29,18 +30,19 @@ export const ColumnManager: React.FC = () => {
       <AnimatePresence>
         {isOpen && (
           <>
-            {/* Backdrop */}
             <motion.div
-              className="fixed inset-0 bg-black/50 z-40"
+              className="fixed inset-0 z-40 bg-black/50"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsOpen(false)}
             />
-
-            {/* Panel */}
             <motion.div
-              className="fixed right-0 top-0 h-full w-80 bg-surface shadow-xl z-50 overflow-y-auto"
+              className="fixed top-0 right-0 z-50 h-full overflow-y-auto shadow-xl w-80 bg-surface"
+              style={{ 
+                backgroundColor: 'var(--color-surface)',
+                boxShadow: '-10px 0 25px -5px rgba(0, 0, 0, 0.1), -10px 0 10px -5px rgba(0, 0, 0, 0.04)'
+              }}
               initial={{ x: '100%' }}
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
@@ -66,17 +68,27 @@ export const ColumnManager: React.FC = () => {
                   {columns.map((column, index) => (
                     <motion.div
                       key={column.id}
-                      className="flex items-center gap-3 p-3 rounded-lg border bg-background"
+                      className="flex items-center gap-3 p-3 border rounded-lg bg-background"
                       style={{ borderColor: 'var(--color-border)' }}
                       whileHover={{ backgroundColor: 'var(--color-border)' }}
+                      drag="y"
+                      dragConstraints={{ top: 0, bottom: 0 }}
+                      onDragEnd={(event, info) => {
+                        const dragDistance = info.offset.y;
+                        if (Math.abs(dragDistance) > 50) {
+                          const direction = dragDistance > 0 ? 1 : -1;
+                          const newIndex = Math.max(0, Math.min(columns.length - 1, index + direction));
+                          if (newIndex !== index) {
+                            reorderColumns(index, newIndex);
+                          }
+                        }
+                      }}
                     >
-                      {/* Drag Handle */}
                       <GripVertical 
-                        className="w-4 h-4 cursor-grab opacity-50 hover:opacity-100" 
+                        className="w-4 h-4 opacity-50 cursor-grab hover:opacity-100" 
                         style={{ color: 'var(--color-text-secondary)' }}
                       />
 
-                      {/* Column Info */}
                       <div className="flex-1">
                         <div 
                           className="font-medium"
@@ -90,11 +102,22 @@ export const ColumnManager: React.FC = () => {
                         >
                           {column.field}
                         </div>
+                        
+                        <div className="mt-2">
+                          <label className="text-xs text-gray-500">Width: {column.width || 200}px</label>
+                          <input
+                            type="range"
+                            min="100"
+                            max="400"
+                            value={column.width || 200}
+                            onChange={(e) => resizeColumn(column.id, Number(e.target.value))}
+                            className="w-full mt-1"
+                            style={{ accentColor: 'var(--color-primary)' }}
+                          />
+                        </div>
                       </div>
 
-                      {/* Actions */}
                       <div className="flex items-center gap-2">
-                        {/* Visibility Toggle */}
                         <motion.button
                           onClick={() => toggleColumnVisibility(column.id)}
                           className="p-1 rounded hover:bg-border/20"
@@ -109,7 +132,6 @@ export const ColumnManager: React.FC = () => {
                           )}
                         </motion.button>
 
-                        {/* Pin Toggle */}
                         <motion.button
                           onClick={() => pinColumn(column.id, column.pinned ? null : 'left')}
                           className="p-1 rounded hover:bg-border/20"
@@ -127,9 +149,7 @@ export const ColumnManager: React.FC = () => {
                     </motion.div>
                   ))}
                 </div>
-
-                {/* Quick Actions */}
-                <div className="mt-6 pt-4 border-t" style={{ borderColor: 'var(--color-border)' }}>
+                <div className="pt-4 mt-6 border-t" style={{ borderColor: 'var(--color-border)' }}>
                   <div className="space-y-2">
                     <button
                       onClick={() => {
@@ -139,7 +159,7 @@ export const ColumnManager: React.FC = () => {
                           }
                         });
                       }}
-                      className="w-full px-4 py-2 text-sm rounded border hover:bg-border/10"
+                      className="w-full px-4 py-2 text-sm border rounded hover:bg-border/10"
                       style={{
                         color: 'var(--color-text)',
                         borderColor: 'var(--color-border)'
@@ -156,7 +176,7 @@ export const ColumnManager: React.FC = () => {
                           }
                         });
                       }}
-                      className="w-full px-4 py-2 text-sm rounded border hover:bg-border/10"
+                      className="w-full px-4 py-2 text-sm border rounded hover:bg-border/10"
                       style={{
                         color: 'var(--color-text)',
                         borderColor: 'var(--color-border)'
