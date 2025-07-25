@@ -6,7 +6,7 @@ import { GridHeader } from './GridHeader';
 import { GridBody } from './GridBody';
 import { GridFooter } from './GridFooter';
 import { GridToolbar } from './GridToolbar';
-import { FilterPanel } from './FilterPanel';
+import { FilterManager } from './FilterManager';
 import { ColumnManager } from './ColumnManager';
 import { ThemeSelector } from '../ThemeSelector/ThemeSelector';
 import { KeyboardShortcuts } from '../KeyboardShortcuts/KeyboardShortcuts';
@@ -100,9 +100,9 @@ export const DataGrid: React.FC<DataGridProps> = ({ className = '' }) => {
       transition={{ duration: 0.5 }}
     >
       {/* Theme and Language Selector */}
-      <div className="fixed top-4 right-4 z-50 flex gap-2">
+      <div className="fixed z-50 flex gap-2 top-4 right-4">
         <ThemeSelector />
-        <div className="flex items-center gap-2 bg-surface px-3 py-2 rounded-lg shadow-lg">
+        <div className="flex items-center gap-2 px-3 py-2 rounded-lg shadow-lg bg-surface">
           {wsConnected ? (
             <Wifi className="w-4 h-4 text-success" />
           ) : (
@@ -114,9 +114,9 @@ export const DataGrid: React.FC<DataGridProps> = ({ className = '' }) => {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-6">
+      <div className="container px-4 py-6 mx-auto">
         <motion.div
-          className="bg-surface rounded-xl shadow-xl overflow-hidden"
+          className="overflow-hidden shadow-xl bg-surface rounded-xl"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.1 }}
@@ -128,7 +128,7 @@ export const DataGrid: React.FC<DataGridProps> = ({ className = '' }) => {
           <ColumnManager />
 
           {/* Filter Panel */}
-          <FilterPanel />
+          <FilterManager />
 
           {/* Grid Container */}
           <div data-grid-container className="relative overflow-auto">
@@ -153,7 +153,7 @@ export const DataGrid: React.FC<DataGridProps> = ({ className = '' }) => {
           <AnimatePresence>
             {selectedRows.size > 0 && (
               <motion.div
-                className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-primary text-white px-6 py-3 rounded-lg shadow-lg"
+                className="absolute px-6 py-3 text-white transform -translate-x-1/2 rounded-lg shadow-lg bottom-4 left-1/2 bg-primary"
                 initial={{ opacity: 0, y: 20, scale: 0.9 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 20, scale: 0.9 }}

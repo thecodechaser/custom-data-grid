@@ -8,7 +8,7 @@ import { useGridStore } from '../../store/gridStore';
 import { FilterCondition } from '../../types/grid';
 import "react-datepicker/dist/react-datepicker.css";
 
-export const FilterPanel: React.FC = () => {
+export const FilterManager: React.FC = () => {
   const { t } = useTranslation();
   const { columns, filters, addFilter, removeFilter } = useGridStore();
   const [showAddFilter, setShowAddFilter] = useState(false);
@@ -53,7 +53,7 @@ export const FilterPanel: React.FC = () => {
             onChange={(date) => {
               addFilter({ ...filter, value: date });
             }}
-            className="px-3 py-1 rounded border text-sm"
+            className="px-3 py-1 text-sm border rounded"
             style={baseStyle}
           />
         );
@@ -84,7 +84,7 @@ export const FilterPanel: React.FC = () => {
           <select
             value={filter.value}
             onChange={(e) => addFilter({ ...filter, value: e.target.value })}
-            className="px-3 py-1 rounded border text-sm"
+            className="px-3 py-1 text-sm border rounded"
             style={baseStyle}
           >
             <option value="">All</option>
@@ -108,7 +108,7 @@ export const FilterPanel: React.FC = () => {
                   values[0] = Number(e.target.value);
                   addFilter({ ...filter, values });
                 }}
-                className="px-3 py-1 rounded border text-sm w-20"
+                className="w-20 px-3 py-1 text-sm border rounded"
                 style={baseStyle}
               />
               <span style={{ color: 'var(--color-text-secondary)' }}>to</span>
@@ -120,7 +120,7 @@ export const FilterPanel: React.FC = () => {
                   values[1] = Number(e.target.value);
                   addFilter({ ...filter, values });
                 }}
-                className="px-3 py-1 rounded border text-sm w-20"
+                className="w-20 px-3 py-1 text-sm border rounded"
                 style={baseStyle}
               />
             </div>
@@ -131,7 +131,7 @@ export const FilterPanel: React.FC = () => {
             type="number"
             value={filter.value}
             onChange={(e) => addFilter({ ...filter, value: Number(e.target.value) })}
-            className="px-3 py-1 rounded border text-sm"
+            className="px-3 py-1 text-sm border rounded"
             style={baseStyle}
           />
         );
@@ -142,7 +142,7 @@ export const FilterPanel: React.FC = () => {
             type="text"
             value={filter.value}
             onChange={(e) => addFilter({ ...filter, value: e.target.value })}
-            className="px-3 py-1 rounded border text-sm"
+            className="px-3 py-1 text-sm border rounded"
             style={baseStyle}
           />
         );
@@ -155,7 +155,7 @@ export const FilterPanel: React.FC = () => {
 
   return (
     <motion.div
-      className="border-b bg-surface p-4"
+      className="p-4 border-b bg-surface"
       style={{ borderColor: 'var(--color-border)' }}
       initial={{ opacity: 0, height: 0 }}
       animate={{ opacity: 1, height: 'auto' }}
@@ -172,7 +172,7 @@ export const FilterPanel: React.FC = () => {
         
         <motion.button
           onClick={() => setShowAddFilter(true)}
-          className="flex items-center gap-2 px-3 py-1 text-sm rounded border hover:bg-border/10"
+          className="flex items-center gap-2 px-3 py-1 text-sm border rounded hover:bg-border/10"
           style={{
             color: 'var(--color-text)',
             borderColor: 'var(--color-border)'
@@ -193,7 +193,7 @@ export const FilterPanel: React.FC = () => {
             return (
               <motion.div
                 key={`${filter.field}-${index}`}
-                className="flex items-center gap-3 p-3 rounded-lg border bg-background"
+                className="flex items-center gap-3 p-3 border rounded-lg bg-background"
                 style={{ borderColor: 'var(--color-border)' }}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -218,7 +218,7 @@ export const FilterPanel: React.FC = () => {
                     }
                     addFilter(updatedFilter);
                   }}
-                  className="px-3 py-1 rounded border text-sm"
+                  className="px-3 py-1 text-sm border rounded"
                   style={{
                     color: 'var(--color-text)',
                     backgroundColor: 'var(--color-surface)',
@@ -251,7 +251,7 @@ export const FilterPanel: React.FC = () => {
         <AnimatePresence>
           {showAddFilter && (
             <motion.div
-              className="flex items-center gap-3 p-3 rounded-lg border bg-background"
+              className="flex items-center gap-3 p-3 border rounded-lg bg-background"
               style={{ borderColor: 'var(--color-primary)' }}
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -261,7 +261,7 @@ export const FilterPanel: React.FC = () => {
               <select
                 value={newFilter.field}
                 onChange={(e) => setNewFilter({ ...newFilter, field: e.target.value })}
-                className="px-3 py-1 rounded border text-sm min-w-32"
+                className="px-3 py-1 text-sm border rounded min-w-32"
                 style={{
                   color: 'var(--color-text)',
                   backgroundColor: 'var(--color-surface)',
@@ -279,7 +279,7 @@ export const FilterPanel: React.FC = () => {
               <select
                 value={newFilter.operator}
                 onChange={(e) => setNewFilter({ ...newFilter, operator: e.target.value as any })}
-                className="px-3 py-1 rounded border text-sm"
+                className="px-3 py-1 text-sm border rounded"
                 style={{
                   color: 'var(--color-text)',
                   backgroundColor: 'var(--color-surface)',
@@ -298,7 +298,7 @@ export const FilterPanel: React.FC = () => {
                 value={newFilter.value}
                 onChange={(e) => setNewFilter({ ...newFilter, value: e.target.value })}
                 placeholder="Value"
-                className="px-3 py-1 rounded border text-sm"
+                className="px-3 py-1 text-sm border rounded"
                 style={{
                   color: 'var(--color-text)',
                   backgroundColor: 'var(--color-surface)',
@@ -309,7 +309,7 @@ export const FilterPanel: React.FC = () => {
               <div className="flex gap-2">
                 <motion.button
                   onClick={handleAddFilter}
-                  className="px-3 py-1 text-sm rounded text-white"
+                  className="px-3 py-1 text-sm text-white rounded"
                   style={{ backgroundColor: 'var(--color-success)' }}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
@@ -319,7 +319,7 @@ export const FilterPanel: React.FC = () => {
                 
                 <motion.button
                   onClick={() => setShowAddFilter(false)}
-                  className="px-3 py-1 text-sm rounded border"
+                  className="px-3 py-1 text-sm border rounded"
                   style={{
                     color: 'var(--color-text)',
                     borderColor: 'var(--color-border)'
