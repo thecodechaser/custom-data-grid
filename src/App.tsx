@@ -5,6 +5,7 @@ import { useGridStore } from './store/gridStore';
 import { useWebSocket } from './hooks/useWebSocket';
 import { GridColumn, GridRow } from './types/grid';
 import './i18n';
+import {Footer } from './components/footer';
 
 const sampleColumns: GridColumn[] = [
   { id: '1', title: 'Name', field: 'name', type: 'text', sortable: true, filterable: true, visible: true },
@@ -52,6 +53,7 @@ function App() {
       style={{ backgroundColor: theme.colors.background }}
     >
       <DataGrid />
+      <Footer />
       <Toaster position="bottom-right" />
     </div>
   );
