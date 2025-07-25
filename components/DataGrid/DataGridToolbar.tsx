@@ -14,11 +14,11 @@ import {
 import { useGridStore } from '../../store/gridStore';
 import { exportToCSV, exportToPDF, printGrid } from '../../utils/exportUtils';
 
-interface GridToolbarProps {
+interface DataGridToolbarProps {
   onToggleFilter: () => void;
 }
 
-export const GridToolbar: React.FC<GridToolbarProps> = ({onToggleFilter }) => {
+export const DataGridToolbar: React.FC<DataGridToolbarProps> = ({onToggleFilter }) => {
   const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState('');
   const [showExportMenu, setShowExportMenu] = useState(false);

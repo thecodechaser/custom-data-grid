@@ -172,8 +172,10 @@ export const useGridStore = create<GridStore>()(
         set({ filters });
         get().applyFiltersAndSort();
       },
-      
+
       updateFilter: (updateId, updatedFilter) => {
+        console.log(get().filters);
+        console.log(updatedFilter);
         const filters = get().filters.map((f) =>
           f.id === updateId ? { ...f, ...updatedFilter } : f
         );
@@ -235,48 +237,43 @@ export const useGridStore = create<GridStore>()(
                 String(val).toLowerCase().includes(searchValue)
               );
             }
+
             const value = row[filter.column];
+
             switch (filter.operator) {
               case 'equals':
-                return value === filter.value;
+                return value == filter.value;
+              case 'not_equals':
+                return value != filter.value;
               case 'contains':
                 return String(value ?? '')
                   .toLowerCase()
                   .includes(String(filter.value).toLowerCase());
-              case 'startsWith':
+              case 'not_contains':
+                return !String(value ?? '')
+                  .toLowerCase()
+                  .includes(String(filter.value).toLowerCase());
+              case 'starts_with':
                 return String(value ?? '')
                   .toLowerCase()
                   .startsWith(String(filter.value).toLowerCase());
-              case 'endsWith':
+              case 'ends_with':
                 return String(value ?? '')
                   .toLowerCase()
                   .endsWith(String(filter.value).toLowerCase());
-              case 'gt':
+              case 'greater_than':
                 return Number(value) > Number(filter.value);
-              case 'lt':
+              case 'less_than':
                 return Number(value) < Number(filter.value);
-              case 'gte':
+              case 'greater_equal':
                 return Number(value) >= Number(filter.value);
-              case 'lte':
+              case 'less_equal':
                 return Number(value) <= Number(filter.value);
-              case 'in':
-                return (
-                  Array.isArray(filter.values) && filter.values.includes(value)
-                );
-              case 'between':
-                if (!Array.isArray(filter.values) || filter.values.length !== 2)
-                  return true;
-                const [min, max] = filter.values;
-                // Handle dates and numbers
-                if (value instanceof Date || !isNaN(Date.parse(value))) {
-                  const v = new Date(value).getTime();
-                  return (
-                    v >= new Date(min).getTime() && v <= new Date(max).getTime()
-                  );
-                }
-                return value >= min && value <= max;
               case 'boolean':
-                return Boolean(value) === Boolean(filter.value);
+                return (
+                  Boolean(value) ===
+                  (filter.value === 'true' || filter.value === true)
+                );
               default:
                 return true;
             }

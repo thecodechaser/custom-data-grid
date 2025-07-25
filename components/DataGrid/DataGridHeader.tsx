@@ -14,11 +14,11 @@ import {
 import { GridColumn } from '../../types/grid';
 import { useGridStore } from '../../store/gridStore';
 
-interface GridHeaderProps {
+interface DataGridHeaderProps {
   columns: GridColumn[];
 }
 
-export const GridHeader: React.FC<GridHeaderProps> = ({ columns }) => {
+export const DataGridHeader: React.FC<DataGridHeaderProps> = ({ columns }) => {
   const resizingRef = React.useRef<{
     columnId: string | null;
     startX: number;
@@ -37,6 +37,7 @@ export const GridHeader: React.FC<GridHeaderProps> = ({ columns }) => {
     clearSelection,
     reorderColumns,
     resizeColumn,
+    currentPage, pageSize
   } = useGridStore();
 
   const handleSort = (field: string) => {
@@ -48,14 +49,6 @@ export const GridHeader: React.FC<GridHeaderProps> = ({ columns }) => {
       }
     } else {
       setSortConfig({ field, direction: 'asc' });
-    }
-  };
-
-  const handleSelectAll = () => {
-    if (selectedRows.size === filteredRows.length) {
-      clearSelection();
-    } else {
-      selectAllRows();
     }
   };
 
@@ -92,10 +85,30 @@ export const GridHeader: React.FC<GridHeaderProps> = ({ columns }) => {
     document.removeEventListener('mouseup', handleMouseUp);
   };
 
-  const isAllSelected =
-    selectedRows.size === filteredRows.length && filteredRows.length > 0;
-  const isPartiallySelected =
-    selectedRows.size > 0 && selectedRows.size < filteredRows.length;
+  const currentPageRows = filteredRows.slice(
+  (currentPage - 1) * pageSize,
+  currentPage * pageSize
+);
+
+const isAllSelected = currentPageRows.every((row) => selectedRows.has(row.id));
+const isPartiallySelected =
+  currentPageRows.some((row) => selectedRows.has(row.id)) && !isAllSelected;
+
+const handleSelectAll = () => {
+  const ids = currentPageRows.map((r) => r.id);
+  const allSelected = ids.every((id) => selectedRows.has(id));
+
+  if (allSelected) {
+    // Unselect only current page
+    ids.forEach((id) => selectedRows.delete(id));
+  } else {
+    // Select only current page
+    ids.forEach((id) => selectedRows.add(id));
+  }
+
+  // Force update — call set() in zustand
+  useGridStore.setState({ selectedRows: new Set(selectedRows) });
+};
 
   return (
     <thead

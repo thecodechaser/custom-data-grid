@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
 import { useGridStore } from '../../store/gridStore';
 
-export const GridFooter: React.FC = () => {
+export const DataGridFooter: React.FC = () => {
   const { t } = useTranslation();
   const {
     currentPage,

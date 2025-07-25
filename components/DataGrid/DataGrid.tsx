@@ -2,10 +2,10 @@ import React, { useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { useGridStore } from '../../store/gridStore';
-import { GridHeader } from './GridHeader';
-import { GridBody } from './GridBody';
-import { GridFooter } from './GridFooter';
-import { GridToolbar } from './GridToolbar';
+import { DataGridHeader } from './DataGridHeader';
+import { DataGridBody } from './DataGridBody';
+import { DataGridFooter } from './DataGridFooter';
+import { DataGridToolbar } from './DataGridToolbar';
 import { ColumnManager } from './ColumnManager';
 import { ThemeSelector } from '../ThemeSelector/ThemeSelector';
 import { KeyboardShortcuts } from '../KeyboardShortcuts/KeyboardShortcuts';
@@ -111,7 +111,7 @@ export const DataGrid: React.FC<DataGridProps> = ({ className = '' }) => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.1 }}
         >
-          <GridToolbar onToggleFilter={() => setIsFilterOpen(prev => !prev)}/>
+          <DataGridToolbar onToggleFilter={() => setIsFilterOpen(prev => !prev)}/>
           <AnimatePresence>
             {isFilterOpen && (
               <FilterPanel
@@ -128,14 +128,14 @@ export const DataGrid: React.FC<DataGridProps> = ({ className = '' }) => {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.3, delay: 0.2 }}
             >
-              <GridHeader columns={visibleColumns} />
-              <GridBody 
+              <DataGridHeader columns={visibleColumns} />
+              <DataGridBody 
                 columns={visibleColumns} 
                 rows={paginatedRows}
               />
             </motion.table>
           </div>
-          <GridFooter />
+          <DataGridFooter />
           <AnimatePresence>
             {selectedRows.size > 0 && (
               <motion.div

@@ -5,12 +5,12 @@ import { GridColumn, GridRow } from '../../types/grid';
 import { useGridStore } from '../../store/gridStore';
 import { format } from 'date-fns';
 
-interface GridBodyProps {
+interface DataGridBodyProps {
   columns: GridColumn[];
   rows: GridRow[];
 }
 
-export const GridBody: React.FC<GridBodyProps> = ({ columns, rows }) => {
+export const DataGridBody: React.FC<DataGridBodyProps> = ({ columns, rows }) => {
   const { t } = useTranslation();
   const { selectedRows, toggleRowSelection, setRows } = useGridStore();
 

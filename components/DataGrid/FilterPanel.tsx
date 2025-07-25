@@ -20,7 +20,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
     const firstColumn = columns[0];
     const newFilter: FilterCondition = {
       id: Date.now().toString(),
-      column: firstColumn?.field  || '',
+      column: firstColumn?.field || '',
       operator: 'contains',
       value: '',
       type: firstColumn?.type || 'text',
@@ -69,10 +69,77 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
         ];
     }
   };
+  //   const baseClasses = `w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 transition-colors ${
+  //     theme.id === 'dark-slate'
+  //       ? 'bg-gray-700 border-gray-600 text-white focus:ring-blue-500'
+  //       : 'bg-white border-gray-300 text-gray-900 focus:ring-blue-500'
+  //   }`;
+
+  //   switch (filter.type) {
+  //     case 'date':
+  //       return (
+  //         <div className="relative">
+  //           <input
+  //             type="date"
+  //             value={filter.value}
+  //             onChange={(e) =>
+  //               handleUpdateFilter(filter.id, { value: e.target.value })
+  //             }
+  //             className={baseClasses}
+  //           />
+  //           <Calendar className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 pointer-events-none right-3 top-1/2" />
+  //         </div>
+  //       );
+  //     case 'number':
+  //       return (
+  //         <input
+  //           type="number"
+  //           value={filter.value}
+  //           onChange={(e) =>
+  //             handleUpdateFilter(filter.id, { value: e.target.value })
+  //           }
+  //           className={baseClasses}
+  //           placeholder="Enter number..."
+  //         />
+  //       );
+  //     case 'select':
+  //       return (
+  //         <div className="relative">
+  //           <select
+  //             value={filter.value}
+  //             onChange={(e) =>
+  //               handleUpdateFilter(filter.id, { value: e.target.value })
+  //             }
+  //             className={`${baseClasses} appearance-none pr-10`}
+  //           >
+  //             <option value="">Select option...</option>
+  //             {filter.options?.map((option) => (
+  //               <option key={option} value={option}>
+  //                 {option}
+  //               </option>
+  //             ))}
+  //           </select>
+  //           <ChevronDown className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 pointer-events-none right-3 top-1/2" />
+  //         </div>
+  //       );
+  //     default:
+  //       return (
+  //         <input
+  //           type="text"
+  //           value={filter.value}
+  //           onChange={(e) =>
+  //             handleUpdateFilter(filter.id, { value: e.target.value })
+  //           }
+  //           className={baseClasses}
+  //           placeholder="Enter value..."
+  //         />
+  //       );
+  //   }
+  // };
 
   const renderFilterValue = (filter: FilterCondition) => {
     const baseClasses = `w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 transition-colors ${
-      theme === 'dark-slate'
+      theme.id === 'dark-slate'
         ? 'bg-gray-700 border-gray-600 text-white focus:ring-blue-500'
         : 'bg-white border-gray-300 text-gray-900 focus:ring-blue-500'
     }`;
@@ -92,6 +159,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
             <Calendar className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 pointer-events-none right-3 top-1/2" />
           </div>
         );
+
       case 'number':
         return (
           <input
@@ -104,6 +172,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
             placeholder="Enter number..."
           />
         );
+
       case 'select':
         return (
           <div className="relative">
@@ -124,6 +193,26 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
             <ChevronDown className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 pointer-events-none right-3 top-1/2" />
           </div>
         );
+
+      case 'boolean':
+        return (
+          <div className="relative">
+            <select
+              value={filter.value}
+              onChange={(e) =>
+                handleUpdateFilter(filter.id, { value: e.target.value })
+              }
+              className={`${baseClasses} appearance-none pr-10`}
+            >
+              <option value="">Select...</option>
+              <option value="true">True</option>
+              <option value="false">False</option>
+            </select>
+            <ChevronDown className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 pointer-events-none right-3 top-1/2" />
+          </div>
+        );
+
+      case 'text':
       default:
         return (
           <input
@@ -183,127 +272,124 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
             </div>
 
             <div className="space-y-4">
-              {filters.filter((filter) => filter.id !== '_search')
-              .map((filter, index) => (
-                <motion.div
-                  key={filter.id}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  transition={{ delay: index * 0.1 }}
-                  className={`p-4 rounded-lg border ${
-                    theme.id === 'dark-slate'
-                      ? 'bg-gray-700 border-gray-600'
-                      : 'bg-gray-50 border-gray-200'
-                  }`}
-                >
-                  <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
-                    {/* Column Selector */}
-                    <div>
-                      <label
-                        className={`block text-sm font-medium mb-2 ${
-                          theme.id === 'dark-slate'
-                            ? 'text-gray-300'
-                            : 'text-gray-700'
-                        }`}
-                      >
-                        Column
-                      </label>
-                      <div className="relative">
-                        <select
-                          value={filter.column}
-                          onChange={(e) => {
-                            const selectedColumn = columns.find(
-                              (col) => col.id === e.target.value
-                            );
-                            handleUpdateFilter(filter.id, {
-                              column: selectedColumn?.id || '',
-                              type: selectedColumn?.type || 'text',
-                              ...(selectedColumn?.type === 'select'
-                                ? { options: selectedColumn.options || [] }
-                                : {}),
-                            });
-                          }}
-                          className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 appearance-none pr-10 transition-colors ${
+              {filters
+                .filter((filter) => filter.id !== '_search')
+                .map((filter, index) => (
+                  <motion.div
+                    key={filter.id}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    transition={{ delay: index * 0.1 }}
+                    className={`p-4 rounded-lg border ${
+                      theme.id === 'dark-slate'
+                        ? 'bg-gray-700 border-gray-600'
+                        : 'bg-gray-50 border-gray-200'
+                    }`}
+                  >
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
+                      <div>
+                        <label
+                          className={`block text-sm font-medium mb-2 ${
                             theme.id === 'dark-slate'
-                              ? 'bg-gray-600 border-gray-500 text-white focus:ring-blue-500'
-                              : 'bg-white border-gray-300 text-gray-900 focus:ring-blue-500'
+                              ? 'text-gray-300'
+                              : 'text-gray-700'
                           }`}
                         >
-                          {columns.map((column) => (
-                            <option key={column.id} value={column.id}>
-                              {column.title}
-                            </option>
-                          ))}
-                        </select>
-                        <ChevronDown className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 pointer-events-none right-3 top-1/2" />
+                          Column
+                        </label>
+                        <div className="relative">
+                          <select
+                            value={filter.column}
+                            onChange={(e) => {
+                              const selectedColumn = columns.find(
+                                (col) => col.id === e.target.value
+                              );
+                              handleUpdateFilter(filter.id, {
+                                column: selectedColumn?.field || '',
+                                type: selectedColumn?.type || 'text',
+                                ...(selectedColumn?.type === 'select'
+                                  ? { options: selectedColumn.options || [] }
+                                  : {}),
+                              });
+                            }}
+                            className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 appearance-none pr-10 transition-colors ${
+                              theme.id === 'dark-slate'
+                                ? 'bg-gray-600 border-gray-500 text-white focus:ring-blue-500'
+                                : 'bg-white border-gray-300 text-gray-900 focus:ring-blue-500'
+                            }`}
+                          >
+                            {columns.map((column) => (
+                              <option key={column.id} value={column.id}>
+                                {column.title}
+                              </option>
+                            ))}
+                          </select>
+                          <ChevronDown className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 pointer-events-none right-3 top-1/2" />
+                        </div>
                       </div>
-                    </div>
 
-                    {/* Operator Selector */}
-                    <div>
-                      <label
-                        className={`block text-sm font-medium mb-2 ${
-                          theme.id === 'dark-slate'
-                            ? 'text-gray-300'
-                            : 'text-gray-700'
-                        }`}
-                      >
-                        Operator
-                      </label>
-                      <div className="relative">
-                        <select
-                          value={filter.operator}
-                          onChange={(e) =>
-                            handleUpdateFilter(filter.id, {
-                              operator: e.target.value,
-                            })
-                          }
-                          className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 appearance-none pr-10 transition-colors ${
+                      <div>
+                        <label
+                          className={`block text-sm font-medium mb-2 ${
                             theme.id === 'dark-slate'
-                              ? 'bg-gray-600 border-gray-500 text-white focus:ring-blue-500'
-                              : 'bg-white border-gray-300 text-gray-900 focus:ring-blue-500'
+                              ? 'text-gray-300'
+                              : 'text-gray-700'
                           }`}
                         >
-                          {getOperatorOptions(filter.type).map((option) => (
-                            <option key={option.value} value={option.value}>
-                              {option.label}
-                            </option>
-                          ))}
-                        </select>
-                        <ChevronDown className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 pointer-events-none right-3 top-1/2" />
+                          Operator
+                        </label>
+                        <div className="relative">
+                          <select
+                            value={filter.operator}
+                            onChange={(e) =>
+                              handleUpdateFilter(filter.id, {
+                                operator: e.target.value,
+                              })
+                            }
+                            className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 appearance-none pr-10 transition-colors ${
+                              theme.id === 'dark-slate'
+                                ? 'bg-gray-600 border-gray-500 text-white focus:ring-blue-500'
+                                : 'bg-white border-gray-300 text-gray-900 focus:ring-blue-500'
+                            }`}
+                          >
+                            {getOperatorOptions(filter.type).map((option) => (
+                              <option key={option.value} value={option.value}>
+                                {option.label}
+                              </option>
+                            ))}
+                          </select>
+                          <ChevronDown className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 pointer-events-none right-3 top-1/2" />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label
+                          className={`block text-sm font-medium mb-2 ${
+                            theme.id === 'dark-slate'
+                              ? 'text-gray-300'
+                              : 'text-gray-700'
+                          }`}
+                        >
+                          Value
+                        </label>
+                        {renderFilterValue(filter)}
+                      </div>
+
+                      <div className="flex items-end">
+                        <button
+                          onClick={() => removeFilter(filter.id)}
+                          className="flex items-center justify-center w-full gap-2 px-4 py-2 text-white transition-colors bg-red-500 rounded-lg hover:bg-red-600"
+                        >
+                          <X className="w-4 h-4" />
+                          Remove
+                        </button>
                       </div>
                     </div>
+                  </motion.div>
+                ))}
 
-                    {/* Value Input */}
-                    <div>
-                      <label
-                        className={`block text-sm font-medium mb-2 ${
-                          theme.id === 'dark-slate'
-                            ? 'text-gray-300'
-                            : 'text-gray-700'
-                        }`}
-                      >
-                        Value
-                      </label>
-                      {renderFilterValue(filter)}
-                    </div>
-
-                    {/* Remove Filter */}
-                    <div className="flex items-end">
-                      <button
-                        onClick={() => removeFilter(filter.id)}
-                        className="flex items-center justify-center w-full gap-2 px-4 py-2 text-white transition-colors bg-red-500 rounded-lg hover:bg-red-600"
-                      >
-                        <X className="w-4 h-4" />
-                        Remove
-                      </button>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-
-              {filters.filter(f => f.id !== '_search').length === 0 && (
+              {filters.filter((f) => f.id !== '_search').length === 0 && (
                 <div
                   className={`text-center py-8 ${
                     theme.id === 'dark-slate'

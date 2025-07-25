@@ -22,9 +22,24 @@ export interface GridRow {
 export interface FilterCondition {
   id: string;
   column: string;
-  operator: 'equals' | 'contains' | 'startsWith' | 'endsWith' | 'gt' | 'lt' | 'gte' | 'lte' | 'in' | 'between';
+  operator:
+    | 'equals'
+    | 'not_equals'
+    | 'contains'
+    | 'not_contains'
+    | 'starts_with'
+    | 'ends_with'
+    | 'greater_than'
+    | 'less_than'
+    | 'greater_equal'
+    | 'less_equal'
+    | 'in'
+    | 'between'
+    | 'boolean';
+
   value: any;
-  values?: any[]; 
+  type: 'text' | 'number' | 'date' | 'boolean' | 'select';
+  values?: any[];
 }
 
 export interface SortConfig {
