@@ -110,7 +110,7 @@ export const DataGrid: React.FC<DataGridProps> = ({ className = '' }) => {
         >
           <GridToolbar />
           <ColumnManager />
-          <div data-grid-container className="relative overflow-auto">
+          <div data-grid-container className="relative overflow-auto h-[80vh]">
             <motion.table 
               className="border border-indigo-900 w-max"
               initial={{ opacity: 0 }}
