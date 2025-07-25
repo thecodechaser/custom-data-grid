@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { GridColumn, GridRow } from '../../types/grid';
@@ -12,14 +12,18 @@ interface GridBodyProps {
 
 export const GridBody: React.FC<GridBodyProps> = ({ columns, rows }) => {
   const { t } = useTranslation();
-  const { selectedRows, toggleRowSelection } = useGridStore();
+  const { selectedRows, toggleRowSelection, setRows } = useGridStore();
+
+  const [editingCell, setEditingCell] = useState<{
+    rowId: string;
+    field: string;
+  } | null>(null);
+  const [editValue, setEditValue] = useState<string>('');
 
   const formatCellValue = (value: any, column: GridColumn) => {
     if (value === null || value === undefined) return '';
-    
-    if (column.format) {
-      return column.format(value);
-    }
+
+    if (column.format) return column.format(value);
 
     switch (column.type) {
       case 'date':
@@ -33,12 +37,42 @@ export const GridBody: React.FC<GridBodyProps> = ({ columns, rows }) => {
     }
   };
 
+  const handleCellClick = (rowId: number, field: string, value: any) => {
+    setEditingCell({ rowId, field });
+    setEditValue(String(value ?? ''));
+  };
+
+  const handleEditChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEditValue(e.target.value);
+  };
+
+  const handleEditSave = () => {
+    if (!editingCell) return;
+    const { rowId, field } = editingCell;
+
+    const updatedRows = rows.map((row) =>
+      row.id === rowId ? { ...row, [field]: editValue } : row
+    );
+
+    setRows(updatedRows);
+    setEditingCell(null);
+    setEditValue('');
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleEditSave();
+    } else if (e.key === 'Escape') {
+      setEditingCell(null);
+    }
+  };
+
   if (rows.length === 0) {
     return (
       <tbody>
         <tr>
-          <td 
-            colSpan={columns.length + 1} 
+          <td
+            colSpan={columns.length + 1}
             className="p-8 text-center"
             style={{ color: 'var(--color-text-secondary)' }}
           >
@@ -69,9 +103,9 @@ export const GridBody: React.FC<GridBodyProps> = ({ columns, rows }) => {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 20 }}
             transition={{ duration: 0.2, delay: index * 0.02 }}
-            whileHover={{ 
-              backgroundColor: 'var(--color-border)', 
-              transition: { duration: 0.1 } 
+            whileHover={{
+              backgroundColor: 'var(--color-border)',
+              transition: { duration: 0.1 },
             }}
           >
             <td className="w-12 p-3">
@@ -89,24 +123,45 @@ export const GridBody: React.FC<GridBodyProps> = ({ columns, rows }) => {
                 />
               </motion.div>
             </td>
-            {columns.map((column) => (
-              <motion.td
-                key={`${row.id}-${column.id}`}
-                className="p-3 truncate"
-                style={{ 
-                  color: 'var(--color-text)',
-                  maxWidth: column.width || 200
-                }}
-                whileHover={{ 
-                  scale: 1.02,
-                  transition: { duration: 0.1 }
-                }}
-              >
-                <div className="truncate" title={String(row[column.field])}>
-                  {formatCellValue(row[column.field], column)}
-                </div>
-              </motion.td>
-            ))}
+            {columns.map((column) => {
+              const isEditing =
+                editingCell?.rowId === row.id &&
+                editingCell.field === column.field;
+
+              return (
+                <motion.td
+                  key={`${row.id}-${column.id}`}
+                  className="p-3 truncate"
+                  style={{
+                    color: 'var(--color-text)',
+                    maxWidth: column.width || 200,
+                    cursor: 'pointer',
+                  }}
+                  whileHover={{
+                    scale: 1.02,
+                    transition: { duration: 0.1 },
+                  }}
+                  onClick={() =>
+                    handleCellClick(row.id, column.field, row[column.field])
+                  }
+                >
+                  {isEditing ? (
+                    <input
+                      autoFocus
+                      className="w-full p-1 border rounded"
+                      value={editValue}
+                      onChange={handleEditChange}
+                      onBlur={handleEditSave}
+                      onKeyDown={handleKeyDown}
+                    />
+                  ) : (
+                    <div className="truncate" title={String(row[column.field])}>
+                      {formatCellValue(row[column.field], column)}
+                    </div>
+                  )}
+                </motion.td>
+              );
+            })}
           </motion.tr>
         ))}
       </AnimatePresence>

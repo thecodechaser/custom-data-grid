@@ -1,12 +1,19 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { GridState, GridColumn, GridRow, FilterCondition, SortConfig, Theme } from '../types/grid';
+import {
+  GridState,
+  GridColumn,
+  GridRow,
+  FilterCondition,
+  SortConfig,
+  Theme,
+} from '../types/grid';
 
 interface GridStore extends GridState {
   theme: Theme;
   locale: string;
   wsConnected: boolean;
-  
+
   setColumns: (columns: GridColumn[]) => void;
   setRows: (rows: GridRow[]) => void;
   updateRow: (id: string | number, data: Partial<GridRow>) => void;
@@ -48,7 +55,7 @@ const themes: Theme[] = [
       success: '#10B981',
       warning: '#F59E0B',
       error: '#EF4444',
-    }
+    },
   },
   {
     id: 'dark-slate',
@@ -65,7 +72,7 @@ const themes: Theme[] = [
       success: '#06B6D4',
       warning: '#F97316',
       error: '#F87171',
-    }
+    },
   },
   {
     id: 'forest-green',
@@ -82,8 +89,8 @@ const themes: Theme[] = [
       success: '#059669',
       warning: '#D97706',
       error: '#DC2626',
-    }
-  }
+    },
+  },
 ];
 
 export const useGridStore = create<GridStore>()(
@@ -106,11 +113,13 @@ export const useGridStore = create<GridStore>()(
       setColumns: (columns) => set({ columns }),
       setRows: (rows) => {
         set({ rows });
-        get().applyFiltersAndSort();
+        queueMicrotask(() => {
+          get().applyFiltersAndSort();
+        });
       },
 
       updateRow: (id, data) => {
-        const rows = get().rows.map(row => 
+        const rows = get().rows.map((row) =>
           row.id === id ? { ...row, ...data } : row
         );
         set({ rows });
@@ -118,8 +127,10 @@ export const useGridStore = create<GridStore>()(
       },
 
       deleteRows: (ids) => {
-        const rows = get().rows.filter(row => !ids.includes(row.id));
-        const selectedRows = new Set([...get().selectedRows].filter(id => !ids.includes(id)));
+        const rows = get().rows.filter((row) => !ids.includes(row.id));
+        const selectedRows = new Set(
+          [...get().selectedRows].filter((id) => !ids.includes(id))
+        );
         set({ rows, selectedRows });
         get().applyFiltersAndSort();
       },
@@ -135,7 +146,7 @@ export const useGridStore = create<GridStore>()(
       },
 
       selectAllRows: () => {
-        const selectedRows = new Set(get().filteredRows.map(row => row.id));
+        const selectedRows = new Set(get().filteredRows.map((row) => row.id));
         set({ selectedRows });
       },
 
@@ -149,14 +160,14 @@ export const useGridStore = create<GridStore>()(
       },
 
       addFilter: (filter) => {
-        const filters = get().filters.filter(f => f.field !== filter.field);
+        const filters = get().filters.filter((f) => f.field !== filter.field);
         filters.push(filter);
         set({ filters, currentPage: 1 });
         get().applyFiltersAndSort();
       },
 
       removeFilter: (field) => {
-        const filters = get().filters.filter(f => f.field !== field);
+        const filters = get().filters.filter((f) => f.field !== field);
         set({ filters });
         get().applyFiltersAndSort();
       },
@@ -170,14 +181,14 @@ export const useGridStore = create<GridStore>()(
       setPageSize: (size) => set({ pageSize: size, currentPage: 1 }),
 
       toggleColumnVisibility: (columnId) => {
-        const columns = get().columns.map(col =>
+        const columns = get().columns.map((col) =>
           col.id === columnId ? { ...col, visible: !col.visible } : col
         );
         set({ columns });
       },
 
       resizeColumn: (columnId, width) => {
-        const columns = get().columns.map(col =>
+        const columns = get().columns.map((col) =>
           col.id === columnId ? { ...col, width } : col
         );
         set({ columns });
@@ -191,7 +202,7 @@ export const useGridStore = create<GridStore>()(
       },
 
       pinColumn: (columnId, position) => {
-        const columns = get().columns.map(col =>
+        const columns = get().columns.map((col) =>
           col.id === columnId ? { ...col, pinned: position } : col
         );
         set({ columns });
@@ -207,26 +218,32 @@ export const useGridStore = create<GridStore>()(
         let filteredRows = [...get().rows];
         const { filters, sortConfig } = get();
 
-        filters.forEach(filter => {
-          filteredRows = filteredRows.filter(row => {
+        filters.forEach((filter) => {
+          filteredRows = filteredRows.filter((row) => {
             if (filter.field === '_search') {
               const searchValue = String(filter.value).toLowerCase();
-              return Object.values(row).some(val => 
+              return Object.values(row).some((val) =>
                 String(val).toLowerCase().includes(searchValue)
               );
             }
-            
+
             const value = row[filter.field];
-            
+
             switch (filter.operator) {
               case 'equals':
                 return value === filter.value;
               case 'contains':
-                return String(value).toLowerCase().includes(String(filter.value).toLowerCase());
+                return String(value)
+                  .toLowerCase()
+                  .includes(String(filter.value).toLowerCase());
               case 'startsWith':
-                return String(value).toLowerCase().startsWith(String(filter.value).toLowerCase());
+                return String(value)
+                  .toLowerCase()
+                  .startsWith(String(filter.value).toLowerCase());
               case 'endsWith':
-                return String(value).toLowerCase().endsWith(String(filter.value).toLowerCase());
+                return String(value)
+                  .toLowerCase()
+                  .endsWith(String(filter.value).toLowerCase());
               case 'gt':
                 return Number(value) > Number(filter.value);
               case 'lt':
@@ -238,7 +255,9 @@ export const useGridStore = create<GridStore>()(
               case 'in':
                 return filter.values?.includes(value);
               case 'between':
-                return value >= filter.values?.[0] && value <= filter.values?.[1];
+                return (
+                  value >= filter.values?.[0] && value <= filter.values?.[1]
+                );
               default:
                 return true;
             }
@@ -249,7 +268,7 @@ export const useGridStore = create<GridStore>()(
           filteredRows.sort((a, b) => {
             const aValue = a[sortConfig.field];
             const bValue = b[sortConfig.field];
-            
+
             if (aValue < bValue) {
               return sortConfig.direction === 'asc' ? -1 : 1;
             }
@@ -262,7 +281,7 @@ export const useGridStore = create<GridStore>()(
 
         const totalPages = Math.ceil(filteredRows.length / get().pageSize);
         set({ filteredRows, totalPages });
-      }
+      },
     }),
     {
       name: 'grid-storage',
@@ -270,8 +289,8 @@ export const useGridStore = create<GridStore>()(
         theme: state.theme,
         locale: state.locale,
         columns: state.columns,
-        pageSize: state.pageSize
-      })
+        pageSize: state.pageSize,
+      }),
     }
   )
 );
