@@ -67,10 +67,12 @@ export const ColumnManager: React.FC = () => {
                 <div className="space-y-3">
                   {columns.map((column, index) => (
                     <motion.div
+                    layout
                       key={column.id}
                       className="flex items-center gap-3 p-3 border rounded-lg bg-background"
                       style={{ borderColor: 'var(--color-border)' }}
                       whileHover={{ backgroundColor: 'var(--color-border)' }}
+                      whileDrag={{ scale: 1.03, zIndex: 1000 }}
                       drag="y"
                       dragConstraints={{ top: 0, bottom: 0 }}
                       onDragEnd={(event, info) => {
@@ -108,7 +110,7 @@ export const ColumnManager: React.FC = () => {
                           <input
                             type="range"
                             min="100"
-                            max="400"
+                            max="800"
                             value={column.width || 200}
                             onChange={(e) => resizeColumn(column.id, Number(e.target.value))}
                             className="w-full mt-1"

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { useGridStore } from '../../store/gridStore';
@@ -6,11 +6,10 @@ import { GridHeader } from './GridHeader';
 import { GridBody } from './GridBody';
 import { GridFooter } from './GridFooter';
 import { GridToolbar } from './GridToolbar';
-import { FilterManager } from './FilterManager';
 import { ColumnManager } from './ColumnManager';
 import { ThemeSelector } from '../ThemeSelector/ThemeSelector';
 import { KeyboardShortcuts } from '../KeyboardShortcuts/KeyboardShortcuts';
-import { Loader2, AlertCircle, Wifi, WifiOff } from 'lucide-react';
+import { Loader2, AlertCircle } from 'lucide-react';
 
 interface DataGridProps {
   className?: string;
@@ -22,7 +21,6 @@ export const DataGrid: React.FC<DataGridProps> = ({ className = '' }) => {
     theme,
     loading,
     error,
-    wsConnected,
     filteredRows,
     columns,
     selectedRows,
@@ -101,19 +99,9 @@ export const DataGrid: React.FC<DataGridProps> = ({ className = '' }) => {
     >
       <div className="fixed z-50 flex gap-2 top-4 right-4">
         <ThemeSelector />
-        <div className="flex items-center gap-2 px-3 py-2 rounded-lg shadow-lg bg-surface">
-          {wsConnected ? (
-            <Wifi className="w-4 h-4 text-success" />
-          ) : (
-            <WifiOff className="w-4 h-4 text-error" />
-          )}
-          <span className="text-sm text-text-secondary">
-            {wsConnected ? 'Connected' : 'Disconnected'}
-          </span>
-        </div>
       </div>
 
-      <div className="container px-4 py-6 mx-auto">
+      <div className="px-4 py-6 mx-4 md:mx-20 sm:mx-12">
         <motion.div
           className="overflow-hidden shadow-xl bg-surface rounded-xl"
           initial={{ opacity: 0, y: 20 }}
@@ -122,10 +110,9 @@ export const DataGrid: React.FC<DataGridProps> = ({ className = '' }) => {
         >
           <GridToolbar />
           <ColumnManager />
-          <FilterManager />
           <div data-grid-container className="relative overflow-auto">
             <motion.table 
-              className="w-full border-collapse"
+              className="border border-indigo-900 w-max"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.3, delay: 0.2 }}

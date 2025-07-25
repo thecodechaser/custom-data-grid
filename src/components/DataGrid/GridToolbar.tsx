@@ -192,17 +192,6 @@ export const GridToolbar: React.FC = () => {
           <Printer className="w-4 h-4" />
           {t('actions.print')}
         </motion.button>
-        <motion.button
-          className="p-2 transition-colors border rounded-lg hover:bg-border/10"
-          style={{
-            color: 'var(--color-text)',
-            borderColor: 'var(--color-border)'
-          }}
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-        >
-          <Settings className="w-5 h-5" />
-        </motion.button>
       </div>
       {showExportMenu && (
         <div

@@ -20,7 +20,7 @@ const sampleColumns: GridColumn[] = [
 ];
 
 // sample data 
-const sampleRows: GridRow[] = Array.from({ length: 1000 }, (_, i) => ({
+const sampleRows: GridRow[] = Array.from({ length: 2000 }, (_, i) => ({
   id: i + 1,
   name: `Employee ${i + 1}`,
   email: `employee${i + 1}@company.com`,

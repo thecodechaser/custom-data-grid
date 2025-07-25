@@ -1,15 +1,15 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { 
-  ChevronUp, 
-  ChevronDown, 
-  Filter, 
-  Eye, 
-  EyeOff, 
-  Pin, 
+import {
+  ChevronUp,
+  ChevronDown,
+  Filter,
+  Eye,
+  EyeOff,
+  Pin,
   PinOff,
-  GripVertical 
+  GripVertical,
 } from 'lucide-react';
 import { GridColumn } from '../../types/grid';
 import { useGridStore } from '../../store/gridStore';
@@ -19,6 +19,12 @@ interface GridHeaderProps {
 }
 
 export const GridHeader: React.FC<GridHeaderProps> = ({ columns }) => {
+  const resizingRef = React.useRef<{
+    columnId: string | null;
+    startX: number;
+    startWidth: number;
+  } | null>(null);
+
   const { t } = useTranslation();
   const {
     sortConfig,
@@ -28,7 +34,9 @@ export const GridHeader: React.FC<GridHeaderProps> = ({ columns }) => {
     selectedRows,
     filteredRows,
     selectAllRows,
-    clearSelection
+    clearSelection,
+    reorderColumns,
+    resizeColumn,
   } = useGridStore();
 
   const handleSort = (field: string) => {
@@ -51,11 +59,49 @@ export const GridHeader: React.FC<GridHeaderProps> = ({ columns }) => {
     }
   };
 
-  const isAllSelected = selectedRows.size === filteredRows.length && filteredRows.length > 0;
-  const isPartiallySelected = selectedRows.size > 0 && selectedRows.size < filteredRows.length;
+  const initResize = (
+    e: React.MouseEvent,
+    columnId: string,
+    currentWidth: number
+  ) => {
+    e.preventDefault();
+    resizingRef.current = {
+      columnId,
+      startX: e.clientX,
+      startWidth: currentWidth,
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+  };
+
+  const handleMouseMove = (e: MouseEvent) => {
+    if (resizingRef.current) {
+      const deltaX = e.clientX - resizingRef.current.startX;
+      const newWidth = Math.max(
+        100,
+        Math.min(800, resizingRef.current.startWidth + deltaX)
+      );
+      resizeColumn(resizingRef.current.columnId!, newWidth);
+    }
+  };
+
+  const handleMouseUp = () => {
+    resizingRef.current = null;
+    document.removeEventListener('mousemove', handleMouseMove);
+    document.removeEventListener('mouseup', handleMouseUp);
+  };
+
+  const isAllSelected =
+    selectedRows.size === filteredRows.length && filteredRows.length > 0;
+  const isPartiallySelected =
+    selectedRows.size > 0 && selectedRows.size < filteredRows.length;
 
   return (
-    <thead className="border-b bg-surface" style={{ borderColor: 'var(--color-border)' }}>
+    <thead
+      className="border-b bg-surface"
+      style={{ borderColor: 'var(--color-border)' }}
+    >
       <tr>
         <th className="w-12 p-3 text-left">
           <motion.div
@@ -73,9 +119,9 @@ export const GridHeader: React.FC<GridHeaderProps> = ({ columns }) => {
               }}
               onChange={handleSelectAll}
               className="w-4 h-4 rounded cursor-pointer"
-              style={{ 
+              style={{
                 accentColor: 'var(--color-primary)',
-                color: 'var(--color-primary)' 
+                color: 'var(--color-primary)',
               }}
             />
           </motion.div>
@@ -84,16 +130,21 @@ export const GridHeader: React.FC<GridHeaderProps> = ({ columns }) => {
         {columns.map((column, index) => (
           <motion.th
             key={column.id}
-            className="relative p-3 font-semibold text-left group"
-            style={{ 
+            className="relative p-3 font-semibold text-left border-r border-indigo-900 group"
+            style={{
               color: 'var(--color-text)',
               minWidth: column.minWidth || 100,
-              width: column.width
+              width: column.width,
             }}
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: index * 0.05 }}
           >
+            <div
+              className="absolute top-0 right-0 w-1 h-full cursor-col-resize hover:bg-border"
+              onMouseDown={(e) => initResize(e, column.id, column.width || 200)}
+              style={{ zIndex: 50 }}
+            />
             <div className="flex items-center gap-2">
               <motion.div
                 className="cursor-grab"
@@ -105,9 +156,12 @@ export const GridHeader: React.FC<GridHeaderProps> = ({ columns }) => {
                   const dragDistance = info.offset.x;
                   if (Math.abs(dragDistance) > 100) {
                     const direction = dragDistance > 0 ? 1 : -1;
-                    const newIndex = Math.max(0, Math.min(columns.length - 1, index + direction));
+                    const newIndex = Math.max(
+                      0,
+                      Math.min(columns.length - 1, index + direction)
+                    );
                     if (newIndex !== index) {
-                      console.log(`Reorder column ${index} to ${newIndex}`);
+                      reorderColumns(index, newIndex);
                     }
                   }
                 }}
@@ -124,9 +178,15 @@ export const GridHeader: React.FC<GridHeaderProps> = ({ columns }) => {
                 >
                   {sortConfig?.field === column.field ? (
                     sortConfig.direction === 'asc' ? (
-                      <ChevronUp className="w-4 h-4" style={{ color: 'var(--color-primary)' }} />
+                      <ChevronUp
+                        className="w-4 h-4"
+                        style={{ color: 'var(--color-primary)' }}
+                      />
                     ) : (
-                      <ChevronDown className="w-4 h-4" style={{ color: 'var(--color-primary)' }} />
+                      <ChevronDown
+                        className="w-4 h-4"
+                        style={{ color: 'var(--color-primary)' }}
+                      />
                     )
                   ) : (
                     <div className="flex flex-col items-center justify-center w-4 h-4 opacity-30">
@@ -137,15 +197,21 @@ export const GridHeader: React.FC<GridHeaderProps> = ({ columns }) => {
                 </motion.button>
               )}
               {column.pinned && (
-                <Pin className="w-4 h-4 opacity-60" style={{ color: 'var(--color-accent)' }} />
+                <Pin
+                  className="w-4 h-4 opacity-60"
+                  style={{ color: 'var(--color-accent)' }}
+                />
               )}
             </div>
-            <div className="absolute left-0 z-50 invisible p-2 mt-1 transition-all duration-200 border rounded-lg shadow-lg opacity-0 top-full bg-surface group-hover:opacity-100 group-hover:visible min-w-48"
-                 style={{ 
-                   backgroundColor: 'var(--color-surface)',
-                   borderColor: 'var(--color-border)',
-                   boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
-                 }}>
+            <div
+              className="absolute left-0 z-50 invisible p-2 mt-1 transition-all duration-200 border rounded-lg shadow-lg opacity-0 top-full bg-surface group-hover:opacity-100 group-hover:visible min-w-48"
+              style={{
+                backgroundColor: 'var(--color-surface)',
+                borderColor: 'var(--color-border)',
+                boxShadow:
+                  '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+              }}
+            >
               <div className="space-y-1">
                 <button
                   onClick={() => toggleColumnVisibility(column.id)}
@@ -155,26 +221,35 @@ export const GridHeader: React.FC<GridHeaderProps> = ({ columns }) => {
                   <EyeOff className="w-4 h-4" />
                   {t('columns.hide')}
                 </button>
-                
+
                 <button
-                  onClick={() => pinColumn(column.id, column.pinned ? null : 'left')}
+                  onClick={() =>
+                    pinColumn(column.id, column.pinned ? null : 'left')
+                  }
                   className="flex items-center w-full gap-2 px-3 py-2 text-sm transition-colors rounded hover:bg-border/10"
                   style={{ color: 'var(--color-text)' }}
                 >
-                  {column.pinned ? <PinOff className="w-4 h-4" /> : <Pin className="w-4 h-4" />}
+                  {column.pinned ? (
+                    <PinOff className="w-4 h-4" />
+                  ) : (
+                    <Pin className="w-4 h-4" />
+                  )}
                   {column.pinned ? t('columns.unpin') : t('columns.pin')}
                 </button>
-              
-                <div className="pt-2 border-t" style={{ borderColor: 'var(--color-border)' }}>
+
+                <div
+                  className="pt-2 border-t"
+                  style={{ borderColor: 'var(--color-border)' }}
+                >
                   <div className="mb-1 text-xs text-gray-500">Column Width</div>
                   <input
                     type="range"
                     min="100"
-                    max="400"
+                    max="800"
                     value={column.width || 200}
-                    onChange={(e) => {
-                      console.log(`Resize column ${column.id} to ${e.target.value}px`);
-                    }}
+                    onChange={(e) =>
+                      resizeColumn(column.id, Number(e.target.value))
+                    }
                     className="w-full"
                   />
                 </div>
