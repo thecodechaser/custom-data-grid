@@ -20,7 +20,8 @@ export interface GridRow {
 }
 
 export interface FilterCondition {
-  field: string;
+  id: string;
+  column: string;
   operator: 'equals' | 'contains' | 'startsWith' | 'endsWith' | 'gt' | 'lt' | 'gte' | 'lte' | 'in' | 'between';
   value: any;
   values?: any[]; 

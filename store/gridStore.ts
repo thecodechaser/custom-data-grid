@@ -24,6 +24,7 @@ interface GridStore extends GridState {
   setSortConfig: (config: SortConfig | null) => void;
   addFilter: (filter: FilterCondition) => void;
   removeFilter: (field: string) => void;
+  updateFilter: (updateId: string, updatedFilter: FilterCondition) => void;
   clearFilters: () => void;
   setCurrentPage: (page: number) => void;
   setPageSize: (size: number) => void;
@@ -160,14 +161,22 @@ export const useGridStore = create<GridStore>()(
       },
 
       addFilter: (filter) => {
-        const filters = get().filters.filter((f) => f.field !== filter.field);
+        const filters = get().filters.filter((f) => f.id !== filter.id);
         filters.push(filter);
         set({ filters, currentPage: 1 });
         get().applyFiltersAndSort();
       },
 
-      removeFilter: (field) => {
-        const filters = get().filters.filter((f) => f.field !== field);
+      removeFilter: (id) => {
+        const filters = get().filters.filter((f) => f.id !== id);
+        set({ filters });
+        get().applyFiltersAndSort();
+      },
+      
+      updateFilter: (updateId, updatedFilter) => {
+        const filters = get().filters.map((f) =>
+          f.id === updateId ? { ...f, ...updatedFilter } : f
+        );
         set({ filters });
         get().applyFiltersAndSort();
       },
@@ -220,28 +229,26 @@ export const useGridStore = create<GridStore>()(
 
         filters.forEach((filter) => {
           filteredRows = filteredRows.filter((row) => {
-            if (filter.field === '_search') {
+            if (filter.column === '_search') {
               const searchValue = String(filter.value).toLowerCase();
               return Object.values(row).some((val) =>
                 String(val).toLowerCase().includes(searchValue)
               );
             }
-
-            const value = row[filter.field];
-
+            const value = row[filter.column];
             switch (filter.operator) {
               case 'equals':
                 return value === filter.value;
               case 'contains':
-                return String(value)
+                return String(value ?? '')
                   .toLowerCase()
                   .includes(String(filter.value).toLowerCase());
               case 'startsWith':
-                return String(value)
+                return String(value ?? '')
                   .toLowerCase()
                   .startsWith(String(filter.value).toLowerCase());
               case 'endsWith':
-                return String(value)
+                return String(value ?? '')
                   .toLowerCase()
                   .endsWith(String(filter.value).toLowerCase());
               case 'gt':
@@ -253,11 +260,23 @@ export const useGridStore = create<GridStore>()(
               case 'lte':
                 return Number(value) <= Number(filter.value);
               case 'in':
-                return filter.values?.includes(value);
-              case 'between':
                 return (
-                  value >= filter.values?.[0] && value <= filter.values?.[1]
+                  Array.isArray(filter.values) && filter.values.includes(value)
                 );
+              case 'between':
+                if (!Array.isArray(filter.values) || filter.values.length !== 2)
+                  return true;
+                const [min, max] = filter.values;
+                // Handle dates and numbers
+                if (value instanceof Date || !isNaN(Date.parse(value))) {
+                  const v = new Date(value).getTime();
+                  return (
+                    v >= new Date(min).getTime() && v <= new Date(max).getTime()
+                  );
+                }
+                return value >= min && value <= max;
+              case 'boolean':
+                return Boolean(value) === Boolean(filter.value);
               default:
                 return true;
             }
@@ -269,17 +288,16 @@ export const useGridStore = create<GridStore>()(
             const aValue = a[sortConfig.field];
             const bValue = b[sortConfig.field];
 
-            if (aValue < bValue) {
-              return sortConfig.direction === 'asc' ? -1 : 1;
-            }
-            if (aValue > bValue) {
-              return sortConfig.direction === 'asc' ? 1 : -1;
-            }
+            if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
+            if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
             return 0;
           });
         }
 
-        const totalPages = Math.ceil(filteredRows.length / get().pageSize);
+        const totalPages = Math.max(
+          1,
+          Math.ceil(filteredRows.length / get().pageSize)
+        );
         set({ filteredRows, totalPages });
       },
     }),

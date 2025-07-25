@@ -10,6 +10,7 @@ import { ColumnManager } from './ColumnManager';
 import { ThemeSelector } from '../ThemeSelector/ThemeSelector';
 import { KeyboardShortcuts } from '../KeyboardShortcuts/KeyboardShortcuts';
 import { Loader2, AlertCircle } from 'lucide-react';
+import { FilterPanel } from './FilterPanel';
 
 interface DataGridProps {
   className?: string;
@@ -27,6 +28,8 @@ export const DataGrid: React.FC<DataGridProps> = ({ className = '' }) => {
     currentPage,
     pageSize
   } = useGridStore();
+
+  const [isFilterOpen, setIsFilterOpen] = React.useState(false);
 
   const visibleColumns = useMemo(() => 
     columns.filter(col => col.visible !== false)
@@ -108,7 +111,15 @@ export const DataGrid: React.FC<DataGridProps> = ({ className = '' }) => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.1 }}
         >
-          <GridToolbar />
+          <GridToolbar onToggleFilter={() => setIsFilterOpen(prev => !prev)}/>
+          <AnimatePresence>
+            {isFilterOpen && (
+              <FilterPanel
+                isOpen={isFilterOpen}
+                onClose={() => setIsFilterOpen(false)}
+              />
+            )}
+          </AnimatePresence>
           <ColumnManager />
           <div data-grid-container className="relative overflow-auto h-[80vh]">
             <motion.table 

@@ -1,43 +1,48 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { 
-  Search, 
-  Filter, 
-  Download, 
-  Printer, 
-  Trash2, 
+import {
+  Search,
+  Filter,
+  Download,
+  Printer,
+  Trash2,
   Plus,
   Settings,
-  RotateCcw
+  RotateCcw,
 } from 'lucide-react';
 import { useGridStore } from '../../store/gridStore';
 import { exportToCSV, exportToPDF, printGrid } from '../../utils/exportUtils';
 
-export const GridToolbar: React.FC = () => {
+interface GridToolbarProps {
+  onToggleFilter: () => void;
+}
+
+export const GridToolbar: React.FC<GridToolbarProps> = ({onToggleFilter }) => {
   const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState('');
   const [showExportMenu, setShowExportMenu] = useState(false);
-  
-  const { 
-    filteredRows, 
-    selectedRows, 
-    deleteRows, 
+
+  const {
+    filteredRows,
+    selectedRows,
+    deleteRows,
     clearFilters,
     filters,
     addFilter,
-    removeFilter
+    removeFilter,
   } = useGridStore();
 
   const handleSearch = (value: string) => {
     setSearchTerm(value);
-    
+
     if (value.trim()) {
       removeFilter('_search');
       addFilter({
-        field: '_search',
+        id: '_search',
+        column: '_search',
         operator: 'contains',
-        value: value.trim()
+        value: value.trim(),
       });
     } else {
       removeFilter('_search');
@@ -73,8 +78,8 @@ export const GridToolbar: React.FC = () => {
       transition={{ duration: 0.3 }}
     >
       <div className="flex items-center gap-4">
-        <div className="relative">
-          <Search className="absolute w-4 h-4 transform -translate-y-1/2 opacity-50 left-3 top-1/2" />
+        <div className="relative flex">
+          <Search className="absolute w-4 h-4 text-gray-500 transform -translate-y-1/2 left-3 top-1/2" />
           <input
             type="text"
             placeholder="Search..."
@@ -85,26 +90,33 @@ export const GridToolbar: React.FC = () => {
             style={{
               color: 'var(--color-text)',
               borderColor: 'var(--color-border)',
-              backgroundColor: 'var(--color-background)'
+              backgroundColor: 'var(--color-background)',
             }}
           />
+          <button
+            onClick={onToggleFilter}
+            className="flex items-center gap-2 px-4 py-2 ml-4 text-white bg-blue-500 rounded-lg hover:bg-blue-600"
+          >
+            <Filter className="w-4 h-4" />
+            Filters
+          </button>
         </div>
-        {filters.length > 0 && (
+        {filters.filter(f => f.id !== '_search').length > 0 && (
           <motion.div
             className="flex items-center gap-2"
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.2 }}
           >
-            <div 
+            <div
               className="flex items-center gap-1 px-3 py-1 text-sm rounded-full"
-              style={{ 
-                backgroundColor: 'var(--color-primary)', 
-                color: 'white' 
+              style={{
+                backgroundColor: 'var(--color-primary)',
+                color: 'white',
               }}
             >
               <Filter className="w-4 h-4" />
-              {filters.length}
+              {filters.filter(f => f.id !== '_search').length}
             </div>
             <motion.button
               onClick={clearFilters}
@@ -113,7 +125,10 @@ export const GridToolbar: React.FC = () => {
               whileTap={{ scale: 0.95 }}
               title={t('filter.clearAll')}
             >
-              <RotateCcw className="w-4 h-4" style={{ color: 'var(--color-text-secondary)' }} />
+              <RotateCcw
+                className="w-4 h-4"
+                style={{ color: 'var(--color-text-secondary)' }}
+              />
             </motion.button>
           </motion.div>
         )}
@@ -139,7 +154,7 @@ export const GridToolbar: React.FC = () => {
             className="flex items-center gap-2 px-4 py-2 transition-colors border rounded-lg hover:bg-border/10"
             style={{
               color: 'var(--color-text)',
-              borderColor: 'var(--color-border)'
+              borderColor: 'var(--color-border)',
             }}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
@@ -151,10 +166,11 @@ export const GridToolbar: React.FC = () => {
           {showExportMenu && (
             <motion.div
               className="absolute right-0 z-20 p-2 mt-2 border rounded-lg shadow-lg top-full bg-surface min-w-48"
-              style={{ 
+              style={{
                 backgroundColor: 'var(--color-surface)',
                 borderColor: 'var(--color-border)',
-                boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
+                boxShadow:
+                  '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
               }}
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -184,7 +200,7 @@ export const GridToolbar: React.FC = () => {
           className="flex items-center gap-2 px-4 py-2 transition-colors border rounded-lg hover:bg-border/10"
           style={{
             color: 'var(--color-text)',
-            borderColor: 'var(--color-border)'
+            borderColor: 'var(--color-border)',
           }}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
