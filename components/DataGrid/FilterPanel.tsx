@@ -303,7 +303,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                             value={filter.column}
                             onChange={(e) => {
                               const selectedColumn = columns.find(
-                                (col) => col.id === e.target.value
+                                (col) => col.field === e.target.value
                               );
                               handleUpdateFilter(filter.id, {
                                 column: selectedColumn?.field || '',
@@ -320,7 +320,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                             }`}
                           >
                             {columns.map((column) => (
-                              <option key={column.id} value={column.id}>
+                              <option key={column.id} value={column.field}>
                                 {column.title}
                               </option>
                             ))}

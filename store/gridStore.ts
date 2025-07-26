@@ -161,6 +161,7 @@ export const useGridStore = create<GridStore>()(
       },
 
       addFilter: (filter) => {
+        console.log(filter)
         const filters = get().filters.filter((f) => f.id !== filter.id);
         filters.push(filter);
         set({ filters, currentPage: 1 });
@@ -174,8 +175,6 @@ export const useGridStore = create<GridStore>()(
       },
 
       updateFilter: (updateId, updatedFilter) => {
-        console.log(get().filters);
-        console.log(updatedFilter);
         const filters = get().filters.map((f) =>
           f.id === updateId ? { ...f, ...updatedFilter } : f
         );
