@@ -18,7 +18,7 @@
 - CSS
 - JavaScript
 - TypeScript
-- REACT
+- NextJS
 - Zustand
 - Tailwind CSS
 - Framer Motion
