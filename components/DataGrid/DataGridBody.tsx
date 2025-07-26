@@ -20,7 +20,7 @@ export const DataGridBody: React.FC<DataGridBodyProps> = ({ columns, rows }) => 
   } | null>(null);
   const [editValue, setEditValue] = useState<string>('');
 
-  const formatCellValue = (value: any, column: GridColumn) => {
+  const formatCellValue = (value: string, column: GridColumn) => {
     if (value === null || value === undefined) return '';
 
     if (column.format) return column.format(value);
@@ -37,7 +37,7 @@ export const DataGridBody: React.FC<DataGridBodyProps> = ({ columns, rows }) => 
     }
   };
 
-  const handleCellClick = (rowId: number, field: string, value: any) => {
+  const handleCellClick = (rowId: number, field: string, value: string) => {
     setEditingCell({ rowId, field });
     setEditValue(String(value ?? ''));
   };

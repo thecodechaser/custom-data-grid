@@ -398,7 +398,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                   }`}
                 >
                   <Filter className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                  <p>No filters applied. Click "Add Filter" to get started.</p>
+                  <p>No filters applied. Click &quot;Add Filter&quot; to get started.</p>
                 </div>
               )}
             </div>

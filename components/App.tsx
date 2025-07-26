@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Toaster } from 'react-hot-toast';
 import { DataGrid } from './DataGrid/DataGrid';
 import { useGridStore } from '../store/gridStore';
-import { useWebSocket } from '../hooks/useWebSocket';
+// import { useWebSocket } from '../hooks/useWebSocket';
 import { GridColumn, GridRow } from '../types/grid';
 import '../i18n';
 import {Footer } from './Footer';

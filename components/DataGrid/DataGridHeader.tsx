@@ -4,8 +4,6 @@ import { useTranslation } from 'react-i18next';
 import {
   ChevronUp,
   ChevronDown,
-  Filter,
-  Eye,
   EyeOff,
   Pin,
   PinOff,
@@ -33,8 +31,6 @@ export const DataGridHeader: React.FC<DataGridHeaderProps> = ({ columns }) => {
     pinColumn,
     selectedRows,
     filteredRows,
-    selectAllRows,
-    clearSelection,
     reorderColumns,
     resizeColumn,
     currentPage, pageSize

@@ -7,8 +7,6 @@ import {
   Download,
   Printer,
   Trash2,
-  Plus,
-  Settings,
   RotateCcw,
 } from 'lucide-react';
 import { useGridStore } from '../../store/gridStore';

@@ -6,7 +6,7 @@ import { useGridStore } from '../../store/gridStore';
 import { themes } from '../../store/gridStore';
 
 export const ThemeSelector: React.FC = () => {
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const { theme, setTheme, locale, setLocale } = useGridStore();
 
