@@ -13,7 +13,7 @@ export const ThemeSelector: React.FC = () => {
   const languages = [
     { code: 'en', name: 'English' },
     { code: 'es', name: 'Español' },
-    { code: 'fr', name: 'Français' }
+    { code: 'fr', name: 'Français' },
   ];
 
   const handleThemeChange = (newTheme: typeof theme) => {
@@ -42,10 +42,11 @@ export const ThemeSelector: React.FC = () => {
         {isOpen && (
           <motion.div
             className="absolute right-0 z-50 w-64 p-4 mt-2 border rounded-lg shadow-xl top-full bg-surface"
-            style={{ 
+            style={{
               backgroundColor: 'var(--color-surface)',
               borderColor: 'var(--color-border)',
-              boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
+              boxShadow:
+                '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
             }}
             initial={{ opacity: 0, y: -10, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -53,7 +54,7 @@ export const ThemeSelector: React.FC = () => {
             transition={{ duration: 0.2 }}
           >
             <div className="mb-4">
-              <h3 
+              <h3
                 className="mb-3 text-sm font-semibold"
                 style={{ color: 'var(--color-text)' }}
               >
@@ -69,26 +70,29 @@ export const ThemeSelector: React.FC = () => {
                     }`}
                     style={{
                       borderColor: 'var(--color-border)',
-                      ringColor: theme.id === t.id ? 'var(--color-primary)' : 'transparent'
+                      ringColor:
+                        theme.id === t.id
+                          ? 'var(--color-primary)'
+                          : 'transparent',
                     }}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
                     <div className="flex gap-1">
-                      <div 
+                      <div
                         className="w-3 h-3 rounded-full"
                         style={{ backgroundColor: t.colors.primary }}
                       />
-                      <div 
+                      <div
                         className="w-3 h-3 rounded-full"
                         style={{ backgroundColor: t.colors.secondary }}
                       />
-                      <div 
+                      <div
                         className="w-3 h-3 rounded-full"
                         style={{ backgroundColor: t.colors.accent }}
                       />
                     </div>
-                    <span 
+                    <span
                       className="text-sm font-medium"
                       style={{ color: 'var(--color-text)' }}
                     >
@@ -99,8 +103,11 @@ export const ThemeSelector: React.FC = () => {
               </div>
             </div>
 
-            <div className="pt-4 border-t" style={{ borderColor: 'var(--color-border)' }}>
-              <h3 
+            <div
+              className="pt-4 border-t"
+              style={{ borderColor: 'var(--color-border)' }}
+            >
+              <h3
                 className="flex items-center gap-2 mb-3 text-sm font-semibold"
                 style={{ color: 'var(--color-text)' }}
               >
@@ -113,11 +120,17 @@ export const ThemeSelector: React.FC = () => {
                     key={lang.code}
                     onClick={() => handleLanguageChange(lang.code)}
                     className={`px-3 py-2 text-sm rounded-lg text-left w-full ${
-                      locale === lang.code ? 'bg-primary text-white' : 'hover:bg-border/10'
+                      locale === lang.code
+                        ? 'bg-primary text-white'
+                        : 'hover:bg-border/10'
                     }`}
                     style={{
-                      backgroundColor: locale === lang.code ? 'var(--color-primary)' : 'transparent',
-                      color: locale === lang.code ? 'white' : 'var(--color-text)'
+                      backgroundColor:
+                        locale === lang.code
+                          ? 'var(--color-primary)'
+                          : 'transparent',
+                      color:
+                        locale === lang.code ? 'white' : 'var(--color-text)',
                     }}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
@@ -132,10 +145,7 @@ export const ThemeSelector: React.FC = () => {
       </AnimatePresence>
 
       {isOpen && (
-        <div
-          className="fixed inset-0 z-40"
-          onClick={() => setIsOpen(false)}
-        />
+        <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
       )}
     </div>
   );

@@ -161,7 +161,6 @@ export const useGridStore = create<GridStore>()(
       },
 
       addFilter: (filter) => {
-        console.log(filter)
         const filters = get().filters.filter((f) => f.id !== filter.id);
         filters.push(filter);
         set({ filters, currentPage: 1 });
