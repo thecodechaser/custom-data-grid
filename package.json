@@ -1,0 +1,40 @@
+{
+  "name": "custom-data-grid",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@tanstack/react-table": "^8.21.3",
+    "date-fns": "^2.30.0",
+    "framer-motion": "^10.18.0",
+    "html2canvas": "^1.4.1",
+    "i18next": "^23.16.8",
+    "jspdf": "^2.5.2",
+    "lucide-react": "^0.344.0",
+    "next": "15.4.4",
+    "react": "^18.3.1",
+    "react-datepicker": "^4.25.0",
+    "react-dom": "^18.3.1",
+    "react-hot-toast": "^2.5.2",
+    "react-hotkeys-hook": "^4.6.2",
+    "react-i18next": "^13.5.0",
+    "react-select": "^5.10.2",
+    "zustand": "^4.5.7"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "15.4.4",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}
