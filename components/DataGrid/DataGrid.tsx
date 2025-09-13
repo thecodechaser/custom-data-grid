@@ -57,7 +57,7 @@ export const DataGrid: React.FC<DataGridProps> = ({ className = '' }) => {
   if (loading) {
     return (
       <div 
-        className={`flex items-center justify-center h-96 bg-surface rounded-lg ${className}`}
+        className={`flex items-center justify-center bg-surface rounded-lg ${className}`}
         style={gridStyle}
       >
         <motion.div
@@ -78,7 +78,7 @@ export const DataGrid: React.FC<DataGridProps> = ({ className = '' }) => {
   if (error) {
     return (
       <motion.div 
-        className={`flex items-center justify-center h-96 bg-surface rounded-lg ${className}`}
+        className={`flex items-center justify-center bg-surface rounded-lg ${className}`}
         style={gridStyle}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -94,7 +94,7 @@ export const DataGrid: React.FC<DataGridProps> = ({ className = '' }) => {
 
   return (
     <motion.div
-      className={`bg-background min-h-screen ${className}`}
+      className={`bg-background min-h-screen mb-5 mt-10 ${className}`}
       style={gridStyle}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -121,7 +121,7 @@ export const DataGrid: React.FC<DataGridProps> = ({ className = '' }) => {
             )}
           </AnimatePresence>
           <ColumnManager />
-          <div data-grid-container className="relative overflow-auto h-[80vh]">
+          <div data-grid-container className="relative overflow-auto h-[75vh]">
             <motion.table 
               className="border border-indigo-900 w-max"
               initial={{ opacity: 0 }}

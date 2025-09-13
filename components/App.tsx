@@ -6,6 +6,7 @@ import { useGridStore } from '../store/gridStore';
 import { GridColumn, GridRow } from '../types/grid';
 import '../i18n';
 import {Footer } from './Footer';
+import { Header } from './Header';
 
 const sampleColumns: GridColumn[] = [
   { id: '1', title: 'Name', field: 'name', type: 'text', sortable: true, filterable: true, visible: true, width: 200 },
@@ -52,6 +53,7 @@ function App() {
       className="min-h-screen"
       style={{ backgroundColor: theme.colors.background }}
     >
+      <Header />
       <DataGrid />
       <Footer />
       <Toaster position="bottom-right" />

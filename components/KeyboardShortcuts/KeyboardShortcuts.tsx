@@ -21,7 +21,7 @@ export const KeyboardShortcuts: React.FC = () => {
     <>
       <motion.button
         onClick={() => setIsOpen(true)}
-        className="fixed z-40 p-3 border rounded-full shadow-lg bottom-4 left-4 bg-surface"
+        className="fixed z-40 p-3 border rounded-full shadow-lg bottom-20 left-4 bg-surface"
         style={{ borderColor: 'var(--color-border)' }}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
